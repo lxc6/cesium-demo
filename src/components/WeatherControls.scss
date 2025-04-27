@@ -1,0 +1,116 @@
+.weather-controls {
+	position: absolute;
+	top: 90px;
+	right: 20px;
+	background: rgba(255, 255, 255, 0.95);
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	min-width: 120px;
+	z-index: 1000;
+	transition: all 0.3s ease;
+	color: #333;
+
+	&.collapsed {
+		min-width: auto;
+		.weather-header {
+			border-bottom: none;
+		}
+	}
+
+	.weather-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 12px 16px;
+		cursor: pointer;
+		user-select: none;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+		font-weight: 500;
+
+		&:hover {
+			background: rgba(0, 0, 0, 0.03);
+			border-radius: 8px 8px 0 0;
+		}
+
+		.toggle-icon {
+			font-size: 18px;
+			width: 20px;
+			text-align: center;
+		}
+	}
+
+	.weather-content {
+		padding: 12px;
+
+		.weather-buttons {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			margin-bottom: 16px;
+
+			button {
+				padding: 8px 12px;
+				border: 1px solid rgba(0, 0, 0, 0.1);
+				border-radius: 4px;
+				background: white;
+				cursor: pointer;
+				transition: all 0.2s;
+				font-size: 14px;
+				text-align: left;
+
+				&:hover:not(:disabled) {
+					background: #f5f5f5;
+				}
+
+				&.active {
+					background: #1890ff;
+					color: white;
+					border-color: #1890ff;
+				}
+
+				&:disabled {
+					opacity: 0.5;
+					cursor: not-allowed;
+				}
+			}
+		}
+
+		.intensity-control {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			font-size: 14px;
+
+			.slider-container {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+
+			input[type='range'] {
+				flex: 1;
+				height: 4px;
+				border-radius: 2px;
+				background: #e8e8e8;
+				outline: none;
+				-webkit-appearance: none;
+
+				&::-webkit-slider-thumb {
+					-webkit-appearance: none;
+					width: 16px;
+					height: 16px;
+					border-radius: 50%;
+					background: #1890ff;
+					cursor: pointer;
+					border: 2px solid white;
+					box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+				}
+
+				&:disabled {
+					opacity: 0.5;
+					cursor: not-allowed;
+				}
+			}
+		}
+	}
+}

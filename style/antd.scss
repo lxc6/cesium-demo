@@ -1,0 +1,28 @@
+// ----menu
+.ant-menu {
+  background: var(--color-secondary) !important;
+}
+
+.ant-menu-root {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-size: 14px;
+  font-family: Source Han Sans CN;
+  font-weight: 500;
+  .ant-menu-sub {
+    background: transparent !important;
+  }
+  border-inline-end: unset !important;
+}
+
+.ant-collapse-content{
+  background: var(--color-secondary) !important;
+}
+
+.ant-table-wrapper .ant-table-tbody>tr.ant-table-placeholder:hover>td, .ant-table-wrapper .ant-table-tbody>tr.ant-table-placeholder {
+  background: transparent !important;
+  .ant-empty-description{
+    color: #fff;
+  }
+}

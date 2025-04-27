@@ -1,0 +1,13 @@
+.cesium-container {
+	display: flex;
+	justify-content: left;
+	align-items: center;
+	.cesium-widget canvas {
+		border-radius: 10px !important;
+	}
+	.map-container {
+		width: calc(100vw - 260px);
+		height: 90vh;
+		border-radius: 5px;
+	}
+}

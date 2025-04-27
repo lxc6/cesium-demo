@@ -1,0 +1,21 @@
+{
+    "id": "e8e56e9e-96b7-48bf-b4f4-44c5ae7baa7e",
+    "supermap_iserver_url": "http://192.168.1.100:8092",
+    "supermap_iserver_account": "",
+    "supermap_iserver_password": "",
+    "sm3d_data_service": "",
+    "sm2d_data_service": "data_2d_hn_2phase_dev1",
+    "map_service": "map_hn_2phase_dev1",
+    "sm3d_service": "",
+    "sm3d_rvt_data_service": "data_rvt_3d_hn_2phase_dev1",
+    "sm3d_rvt_service": "service_rvt_3d_hn_2phase_dev1",
+    "spatial_analysis_service": "",
+    "left_bottom": "465069.565,2185532.4903",
+    "top_right": "468104.615,2186527.434",
+    "center_point": "109.1800772814675,19.763129066884552",
+    "work_space": "hn_2phase_dev1",
+    "sm3d_work_space": "hn_2phase_dev1_3d",
+    "epsg": "+proj=tmerc +lat_0=0 +lon_0=109.5 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs",
+    "epsg_code": 4490,
+    "basemap_service": "map-ugcv5-hn2phasedev1basemapscene"
+}

@@ -1,0 +1,19 @@
+.control-panel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+    width: 200px; // 固定宽度
+
+    // 重置子组件的定位和宽度
+    .location-controls,
+    .weather-controls {
+        position: static;
+        margin: 0;
+        width: 100%;
+        min-width: unset;
+    }
+} 

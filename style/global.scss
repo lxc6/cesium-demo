@@ -1,0 +1,163 @@
+@use 'sass:math';
+@use 'variable' as *;
+@use 'home';
+@use 'marker';
+@use 'antd';
+@use './themes/blue';
+
+#root {
+	//全局的sass变量用法
+}
+#root,
+.ant-app {
+	//全局的sass变量用法
+	width: 100%;
+	height: 100%;
+}
+
+img {
+	width: 80px;
+}
+
+hr {
+	margin: 16px 0;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body,
+html {
+	min-height: 100vh;
+	height: calc(100vh - 50px);
+	letter-spacing: 0 !important;
+	padding: 0;
+	margin: 0;
+	background: var(--color-bg-gradient);
+	font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC,
+		Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC,
+		WenQuanYi Micro Hei, sans-serif;
+	color: var(--color-text, whitesmoke);
+}
+
+a {
+	text-decoration: none;
+}
+
+ol,
+ul,
+li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#gis-system-root {
+	width: 100%;
+	height: 100vh;
+	background: var(--color-bg, #333) url('/public/images/view-bg.png')
+		no-repeat;
+	background-size: 100% 100%;
+}
+
+input {
+	// 覆盖自动填写的样式
+	&:-webkit-autofill {
+		transition: background-color 9999s ease-in-out 0s;
+		-webkit-text-fill-color: var(--text-color-main);
+	}
+	// 自动填充文本样式
+	&:-webkit-autofill::first-line {
+		font-size: inherit;
+	}
+}
+
+main {
+	height: calc(100vh - 64px);
+	overflow: auto;
+}
+
+.container {
+	width: 100%;
+	height: 100%;
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+* {
+	//scroll-behavior: smooth;
+	&::-webkit-scrollbar {
+		width: 0 !important;
+		height: 6px;
+		//background: white;
+		background-size: 100%;
+		//box-shadow: inset 0 2px 4px black;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+		border-radius: 12px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: #35e3e4;
+		border-radius: 12px;
+	}
+}
+
+.print-area2 {
+	height: 100%;
+	display: none;
+	img {
+		width: auto;
+		height: auto;
+		max-width: 100%;
+		max-height: 100%;
+	}
+	@media print {
+		display: block;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: auto;
+		z-index: 999999;
+		background-color: white;
+	}
+}
+
+.print-area-more {
+	height: 100%;
+	display: none;
+	img {
+		width: auto;
+		height: auto;
+		max-width: 100%;
+		max-height: 100%;
+		display: block;
+		margin: 0 auto;
+	}
+	@media print {
+		display: block;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: auto;
+		z-index: 999999;
+		background-color: white;
+	}
+}
+
+.cesium-viewer-navigationContainer {
+	top: 70px !important;
+	right: 55px !important;
+}
+
+.cesium-performanceDisplay-defaultContainer {
+	top: calc(100% - 100px) !important;
+	right: 55px !important;
+}

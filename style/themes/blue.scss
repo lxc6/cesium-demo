@@ -1,0 +1,41 @@
+@use 'sass:map' as map;
+
+$colors: (
+        "primary": #3974f6,
+        "secondary": (#113785, #031d52),
+        "auxiliary": #37FFEA,
+        "background": #01102F,
+        "success": #4fd878,
+        "warning": #f49500,
+        "error": #f34141,
+);
+
+$text: (
+        "text-hover": #fff,
+        "text-1": #C4D4EB,
+        "text-2": rgba(196, 212, 235, 0.45),
+        "text-3": rgba(196, 212, 235, 0.2),
+        "text-4": rgba(196, 212, 235, 0.04),
+        "text-5": grey,
+);
+
+.theme-blue {
+  --color-primary: #{map.get($colors, "primary")};
+  --color-secondary: #{map.get($colors, "secondary")};
+  --color-secondary2: #{map.get($colors, "secondary", 2)};
+  --color-bg: #{map.get($colors, "background")};
+  --color-hover: #{map.get($text, "text-hover")};
+  --color-title: #{map.get($text, "text-1")};
+  --color-text: #{map.get($text, "text-1")};
+  --color-content: #{map.get($text, "text-2")};
+  --color-auxiliary: #{map.get($text, "text-3")};
+  --color-border: #{map.get($text, "text-4")};
+  --color-auxiliary-bg: #{map.get($text, "text-5")};
+  --color-success: #{map.get($colors, "success")};
+  --color-warning: #{map.get($colors, "warning")};
+  --color-error: #{map.get($colors, "error")};
+
+  --ant-color-text-base: #{map.get($text, "text-2")};
+  --ant-color-bg-base:#{map.get($colors, "background")};
+  --ant-color-text: var(--color-title);
+}

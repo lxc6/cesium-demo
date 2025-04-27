@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"target": "es2018",
+		"module": "esnext",
+		"moduleResolution": "node",
+		"lib": ["dom", "es2015", "es2018"],
+		"jsx": "react-jsx",
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"typeRoots": ["./node_modules/@types", "./types"],
+		"allowSyntheticDefaultImports": true,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["src/*"],
+			"@/types": ["src/types"]
+		}
+	},
+	"include": ["src/**/*", "types/**/*"],
+	"references": [{ "path": "./tsconfig.node.json" }]
+}
