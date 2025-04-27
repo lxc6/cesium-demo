@@ -83,7 +83,7 @@ const WeatherControls: React.FC<WeatherControlsProps> = ({ coreCesium }) => {
                         </button>
                     </div>
                     <div className='intensity-control'>
-                        <span>强度调节</span>
+                        <span>速度调节</span>
                         <div className='slider-container'>
                             <input
                                 type='range'

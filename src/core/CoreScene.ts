@@ -384,32 +384,24 @@ export class CoreScene {
     /**
      * 设置场景天气效果
      */
-    public setWeatherEffect(
-        type: 'rain' | 'snow' | 'none',
-        intensity = 1.0
-    ): void {
+    public setWeatherEffect(type: 'rain' | 'snow' | 'none', speed = 1.0): void {
         // 移除现有效果
         this.viewer.scene.postProcessStages.removeAll();
 
         if (type === 'none') return;
 
-        // 确保强度值在有效范围内
-        const clampedIntensity = Math.max(0.0, Math.min(1.0, intensity));
+        // 确保参数值在有效范围内
+        const clampedSpeed = Math.max(0.1, Math.min(5.0, speed));
 
         const shader = type === 'rain' ? getRainShader() : getSnowShader();
         const weatherStage = new Cesium.PostProcessStage({
             fragmentShader: shader,
             uniforms: {
-                intensity: clampedIntensity,
+                speed: clampedSpeed,
             },
         });
 
         this.viewer.scene.postProcessStages.add(weatherStage);
-
-        // 输出当前天气效果状态
-        console.log(
-            `天气效果已更新 - 类型: ${type}, 强度: ${clampedIntensity}`
-        );
     }
 
     /**

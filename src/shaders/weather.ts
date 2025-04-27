@@ -5,6 +5,8 @@
  */
 export const getRainShader = () => {
     return 'uniform sampler2D colorTexture;\n\
+        uniform float intensity;\n\
+        uniform float speed;\n\
         varying vec2 v_textureCoordinates;\n\
       \n\
         float hash(float x){\n\
@@ -13,7 +15,7 @@ export const getRainShader = () => {
       \n\
       void main(void){\n\
       \n\
-        float time = czm_frameNumber / 60.0;\n\
+        float time = czm_frameNumber / 1000.0 * speed;\n\
       vec2 resolution = czm_viewport.zw;\n\
       \n\
       vec2 uv=(gl_FragCoord.xy*2.-resolution.xy)/min(resolution.x,resolution.y);\n\
@@ -38,11 +40,13 @@ export const getRainShader = () => {
  */
 export const getSnowShader = () => {
     return 'uniform sampler2D colorTexture;\n\
+        uniform float intensity;\n\
+        uniform float speed;\n\
         varying vec2 v_textureCoordinates;\n\
         \n\
         float snow(vec2 uv,float scale)\n\
         {\n\
-            float time = czm_frameNumber / 60.0;\n\
+            float time = czm_frameNumber / 100.0 * speed;\n\
             float w=smoothstep(1.,0.,-uv.y*(scale/10.));if(w<.1)return 0.;\n\
             uv+=time/scale;uv.y+=time*2./scale;uv.x+=sin(uv.y+time*.5)/scale;\n\
             uv*=scale;vec2 s=floor(uv),f=fract(uv),p;float k=3.,d;\n\
