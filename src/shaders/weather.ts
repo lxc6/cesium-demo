@@ -15,7 +15,7 @@ export const getRainShader = () => {
       \n\
       void main(void){\n\
       \n\
-        float time = czm_frameNumber / 1000.0 * speed;\n\
+        float time = czm_frameNumber / 500.0 * speed;\n\
       vec2 resolution = czm_viewport.zw;\n\
       \n\
       vec2 uv=(gl_FragCoord.xy*2.-resolution.xy)/min(resolution.x,resolution.y);\n\
