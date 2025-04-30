@@ -3,20 +3,22 @@ import { useCesium } from '@/hooks/useCesium';
 import { PickedFeature } from '@/types/events';
 import ControlPanel from '@/components/ControlPanel';
 import { PRESET_LOCATIONS } from '@/config/coordinates';
-import { superMap } from '@/utils/providers';
+import { superMap, localMap } from '@/utils/providers';
 import './index.scss';
 
 const CesiumDemo = () => {
-    const { coreCesium, isReady, camera } = useCesium('cesiumContainer', {
-        // defaultImageryProvider: superMap(), // 加载厂区 超图高清底图
+    const { isReady, camera } = useCesium('cesiumContainer', {
+        defaultImageryProvider: localMap(), // 加载厂区 超图高清底图  安庆
+        // defaultImageryProvider: superMap(), // 加载厂区 超图高清底图  榆林
+        // terrainProvider: Cesium.createWorldTerrain(), // 加载地形
     });
 
     useEffect(() => {
         if (camera) {
             // 设置默认位置  海南
             camera?.flyTo({
-                position: PRESET_LOCATIONS.HAINAN.position,
-                ...PRESET_LOCATIONS.HAINAN.camera,
+                position: PRESET_LOCATIONS.ANQING.position,
+                ...PRESET_LOCATIONS.ANQING.camera,
                 duration: 2,
             });
         }
@@ -34,11 +36,7 @@ const CesiumDemo = () => {
 
     return (
         <div className='cesium-container'>
-            <ControlPanel
-                coreCesium={coreCesium}
-                isReady={isReady}
-                onFlyTo={handleFlyTo}
-            />
+            <ControlPanel onFlyTo={handleFlyTo} />
             <div id='cesiumContainer' className='map-container' />
         </div>
     );

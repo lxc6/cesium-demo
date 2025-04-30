@@ -1,47 +1,50 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { CoreScene } from '@/core/CoreScene';
 import axios from 'axios';
 
 /** 基础配置接口 */
 interface BaseConfig {
     /** 超图iServer URL */
-    supermapIserverUrl: string;
+    supermapIserverUrl?: string;
     /** 超图iServer账号 */
     supermapIserverAccount?: string;
     /** 超图iServer密码 */
     supermapIserverPassword?: string;
     /** 3D数据服务 */
-    sm3dDataService: string;
+    sm3dDataService?: string;
     /** 2D数据服务 */
-    sm2dDataService: string;
+    sm2dDataService?: string;
     /** 地图服务 */
-    mapService: string;
+    mapService?: string;
     /** 3D服务 */
-    sm3dService: string;
+    sm3dService?: string;
     /** 3D RVT数据服务 */
-    sm3dRvtDataService: string;
+    sm3dRvtDataService?: string;
     /** 3D RVT服务 */
-    sm3dRvtService: string;
+    sm3dRvtService?: string;
     /** 空间分析服务 */
-    spatialAnalysisService: string;
+    spatialAnalysisService?: string;
     /** 左下角坐标 */
-    leftBottom: string;
+    leftBottom?: string;
     /** 右上角坐标 */
-    topRight: string;
+    topRight?: string;
     /** 中心点坐标 */
-    centerPoint: string;
+    centerPoint?: string;
     /** 工作空间 */
-    workspace: string;
+    workspace?: string;
     /** 3D工作空间 */
-    sm3dWorkspace: string;
+    sm3dWorkspace?: string;
     /** EPSG投影 */
-    epsg: string;
+    epsg?: string;
     /** EPSG代码 */
-    epsgCode: number;
+    epsgCode?: number;
     /** 底图服务 */
-    basemapService: string;
+    basemapService?: string;
     /** 3D服务URL */
-    service3dUrl: string;
+    service3dUrl?: string;
+    /** 其他可能的配置项 */
+    [key: string]: string | number | undefined;
 }
 
 /** 场景图层信息接口 */
@@ -126,143 +129,169 @@ interface CesiumStore {
  * Cesium 全局状态管理
  * 用于管理 Cesium 场景实例和状态
  */
-export const useCesiumStore = create<CesiumStore>((set) => ({
-    // 初始状态
-    coreCesium: null,
-    isReady: false,
-    isAnalysisActive: false,
-    isMeasureActive: false,
-    isDrawActive: false,
-    activeToolType: null,
-    baseConfig: {
-        supermapIserverUrl: '',
-        sm3dDataService: '',
-        sm2dDataService: '',
-        mapService: '',
-        sm3dService: '',
-        sm3dRvtDataService: '',
-        sm3dRvtService: '',
-        spatialAnalysisService: '',
-        leftBottom: '',
-        topRight: '',
-        centerPoint: '',
-        workspace: '',
-        sm3dWorkspace: '',
-        epsg: '',
-        epsgCode: 0,
-        basemapService: '',
-        service3dUrl: '',
-    },
-    currentScene: null,
-    layers: [],
+// 创建持久化存储适配器
+const storage = createJSONStorage(() => localStorage);
 
-    // 状态更新方法
-    setCoreCesium: (scene) => set({ coreCesium: scene }),
-    setIsReady: (ready) => set({ isReady: ready }),
-    setAnalysisActive: (active) =>
-        set((state) => {
-            if (active) {
-                return {
-                    isAnalysisActive: true,
-                    isMeasureActive: false,
-                    isDrawActive: false,
-                    activeToolType: 'analysis',
-                };
-            }
-            return {
-                isAnalysisActive: false,
-                activeToolType:
-                    state.activeToolType === 'analysis'
-                        ? null
-                        : state.activeToolType,
-            };
-        }),
-    setMeasureActive: (active) =>
-        set((state) => {
-            if (active) {
-                return {
-                    isAnalysisActive: false,
-                    isMeasureActive: true,
-                    isDrawActive: false,
-                    activeToolType: 'measure',
-                };
-            }
-            return {
-                isMeasureActive: false,
-                activeToolType:
-                    state.activeToolType === 'measure'
-                        ? null
-                        : state.activeToolType,
-            };
-        }),
-    setDrawActive: (active) =>
-        set((state) => {
-            if (active) {
-                return {
-                    isAnalysisActive: false,
-                    isMeasureActive: false,
-                    isDrawActive: true,
-                    activeToolType: 'draw',
-                };
-            }
-            return {
-                isDrawActive: false,
-                activeToolType:
-                    state.activeToolType === 'draw'
-                        ? null
-                        : state.activeToolType,
-            };
-        }),
-    setActiveToolType: (type) =>
-        set({
-            activeToolType: type,
-            isAnalysisActive: type === 'analysis',
-            isMeasureActive: type === 'measure',
-            isDrawActive: type === 'draw',
-        }),
+export const useCesiumStore = create<CesiumStore>()(
+    persist(
+        (set) => ({
+            // 初始状态
+            coreCesium: null,
+            isReady: false,
+            isAnalysisActive: false,
+            isMeasureActive: false,
+            isDrawActive: false,
+            activeToolType: null,
+            baseConfig: {
+                supermapIserverUrl: '',
+                sm3dDataService: '',
+                sm2dDataService: '',
+                mapService: '',
+                sm3dService: '',
+                sm3dRvtDataService: '',
+                sm3dRvtService: '',
+                spatialAnalysisService: '',
+                leftBottom: '',
+                topRight: '',
+                centerPoint: '',
+                workspace: '',
+                sm3dWorkspace: '',
+                epsg: '',
+                epsgCode: 0,
+                basemapService: '',
+                service3dUrl: '',
+            },
+            currentScene: null,
+            layers: [],
 
-    setBaseConfig: (config) =>
-        set((state) => ({
-            baseConfig: { ...state.baseConfig, ...config },
-        })),
+            // 状态更新方法
+            setCoreCesium: (scene) => set({ coreCesium: scene }),
+            setIsReady: (ready) => set({ isReady: ready }),
+            setAnalysisActive: (active) =>
+                set((state) => {
+                    if (active) {
+                        return {
+                            isAnalysisActive: true,
+                            isMeasureActive: false,
+                            isDrawActive: false,
+                            activeToolType: 'analysis',
+                        };
+                    }
+                    return {
+                        isAnalysisActive: false,
+                        activeToolType:
+                            state.activeToolType === 'analysis'
+                                ? null
+                                : state.activeToolType,
+                    };
+                }),
+            setMeasureActive: (active) =>
+                set((state) => {
+                    if (active) {
+                        return {
+                            isAnalysisActive: false,
+                            isMeasureActive: true,
+                            isDrawActive: false,
+                            activeToolType: 'measure',
+                        };
+                    }
+                    return {
+                        isMeasureActive: false,
+                        activeToolType:
+                            state.activeToolType === 'measure'
+                                ? null
+                                : state.activeToolType,
+                    };
+                }),
+            setDrawActive: (active) =>
+                set((state) => {
+                    if (active) {
+                        return {
+                            isAnalysisActive: false,
+                            isMeasureActive: false,
+                            isDrawActive: true,
+                            activeToolType: 'draw',
+                        };
+                    }
+                    return {
+                        isDrawActive: false,
+                        activeToolType:
+                            state.activeToolType === 'draw'
+                                ? null
+                                : state.activeToolType,
+                    };
+                }),
+            setActiveToolType: (type) =>
+                set({
+                    activeToolType: type,
+                    isAnalysisActive: type === 'analysis',
+                    isMeasureActive: type === 'measure',
+                    isDrawActive: type === 'draw',
+                }),
+            setBaseConfig: (config) =>
+                set((state) => ({
+                    baseConfig: { ...state.baseConfig, ...config },
+                })),
+            getBaseConfig: async () => {
+                try {
+                    const [basicConfigRes, localConfigRes] = await Promise.all([
+                        axios.get('/basic_config_view.json'), // gis基础配置数据
+                        axios.get('/base_config.json'), // 本地基础配置
+                    ]);
 
-    /** 获取基础配置 */
-    getBaseConfig: async () => {
-        try {
-            const response = await axios.get('/basic_config_view.json');
-            const data = response.data;
-
-            set({
-                baseConfig: {
-                    ...data,
-                    supermapIserverUrl: data.supermap_iserver_url,
-                    sm3dDataService: data.sm3d_data_service,
-                    sm2dDataService: data.sm2d_data_service,
-                    sm3dService: data.sm3d_service,
-                    sm3dRvtDataService: data.sm3d_rvt_data_service,
-                    sm3dRvtService: data.sm3d_rvt_service,
-                    service3dUrl: `${data.supermap_iserver_url}/iserver/services/${data.sm3d_rvt_service}/rest/realspace`,
-                },
-                isReady: true,
-            });
-            console.info('获取场景基础配置: 成功');
-            return true;
-        } catch (error) {
-            console.error('获取场景基础配置: 失败', error);
-            return false;
+                    const basicData = basicConfigRes.data;
+                    const localData = localConfigRes.data;
+                    console.log('获取场景基础配置: ', basicData);
+                    console.log('获取场景基础配置: ', localData);
+                    const configs: BaseConfig = {
+                        ...basicData,
+                        ...localData,
+                        supermapIserverUrl:
+                            basicData.supermap_iserver_url || '',
+                        sm3dDataService: basicData.sm3d_data_service || '',
+                        sm2dDataService: basicData.sm2d_data_service || '',
+                        sm3dService: basicData.sm3d_service || '',
+                        sm3dRvtDataService:
+                            basicData.sm3d_rvt_data_service || '',
+                        sm3dRvtService: basicData.sm3d_rvt_service || '',
+                        service3dUrl:
+                            basicData.supermap_iserver_url &&
+                            basicData.sm3d_rvt_service
+                                ? `${basicData.supermap_iserver_url}/iserver/services/${basicData.sm3d_rvt_service}/rest/realspace`
+                                : '',
+                    };
+                    set({ baseConfig: configs });
+                    console.info('获取场景基础配置: 成功');
+                    return true;
+                } catch (error) {
+                    console.error('获取场景基础配置: 失败', error);
+                    return false;
+                }
+            },
+            setCurrentScene: (scene) =>
+                set({
+                    currentScene: scene,
+                    layers: scene.layers,
+                }),
+            updateLayer: (layerId, updates) =>
+                set((state) => ({
+                    layers: state.layers.map((layer) =>
+                        layer.id === layerId ? { ...layer, ...updates } : layer
+                    ),
+                })),
+        }),
+        {
+            name: 'jm-cesium-store',
+            storage,
+            partialize: (state) => ({
+                ...state,
+                coreCesium: null, // 不持久化coreCesium属性
+            }),
+            merge: (persistedState, currentState) => ({
+                ...currentState,
+                // ...persistedState,
+                coreCesium: currentState.coreCesium, // 保持使用当前的coreCesium实例
+            }),
         }
-    },
-
-    setCurrentScene: (scene) =>
-        set({
-            currentScene: scene,
-            layers: scene.layers,
-        }),
-
-    updateLayer: (layerId, updates) =>
-        set((state) => ({
-            layers: state.layers.map((layer) =>
-                layer.id === layerId ? { ...layer, ...updates } : layer
-            ),
-        })),
-}));
+    )
+);

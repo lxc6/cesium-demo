@@ -6,7 +6,9 @@ import { CameraPosition, FlyToOptions } from '../types/camera';
 import { EntityOptions } from '../types/entity';
 
 import { useCesiumStore } from '@/store/cesium';
+import axios from 'axios';
 
+const baseUrl = import.meta.env.VITE_PROXY_DOMAIN_REAL;
 /** Cesium Hook 返回类型 */
 interface UseCesiumReturn {
     coreCesium: CoreScene | null;
@@ -42,7 +44,6 @@ export const useCesium = (
 ): UseCesiumReturn => {
     const [localIsReady, setLocalIsReady] = useState(false);
     const sceneRef = useRef<CoreScene | null>(null);
-    const { baseConfig } = useCesiumStore();
 
     // 相机控制
     const camera = {
@@ -114,11 +115,11 @@ export const useCesium = (
 
     //  初始化场景
     const initScene = async () => {
+        const { baseConfig } = useCesiumStore.getState();
         try {
             if (!sceneRef.current && baseConfig) {
                 const coreCesium = new CoreScene(containerId, options);
                 sceneRef.current = coreCesium;
-
                 // 等待场景初始化完成
                 await new Promise<void>((resolve) => {
                     const checkReady = () => {
@@ -149,15 +150,45 @@ export const useCesium = (
         }
     };
 
-    const addPipe = async (configs: any) => {
-        // ------添加默认模型------
-        const service3dUrl = configs.service3dUrl;
+    const getScene = async (modelId: any) => {
+        console.log('import.meta.env', import.meta.env);
 
+        const { data } = await axios.get(
+            `http://3d.dev.tech/gateway/twins3d/model/showArea/findModelInfo`,
+
+            {
+                headers: {
+                    Authorization: `Bearer RPlEtTDIDItXIEjquuL6BxsPl1DMYdWQNoeBBPtdqap1Vl4mudIZVrk6bD6h7bJQ`,
+                },
+                params: {
+                    modelId,
+                },
+            }
+        );
+        console.log('data: ', data);
+
+        if (!data) {
+            return;
+        }
+        return data;
+    };
+
+    // 添加默认模型
+    const addPipe = async () => {
+        const { baseConfig } = useCesiumStore.getState();
+        // ------添加默认模型------
+        const service3dUrl: any = baseConfig.service3dUrl;
         // pipeline_scene  device_scene
         console.log('sceneRef.current?', sceneRef.current?.viewer.scene);
         console.log('service3dUrl url:', service3dUrl);
         // device_scene
-        if (sceneRef.current && sceneRef.current.viewer) {
+        if (sceneRef.current && sceneRef.current.viewer && baseConfig.modelId) {
+            console.log('baseConfig.modelId', baseConfig.modelId);
+            const viewer = sceneRef.current.viewer;
+            const { scene } = viewer;
+
+            const datas = await getScene(baseConfig.modelId);
+            console.log('datas----------: ', datas);
             // await sceneRef.current.viewer.scene.open(
             //     service3dUrl,
             //     'device_scene',
@@ -165,22 +196,39 @@ export const useCesium = (
             //         autoSetView: false,
             //     }
             // );
+            console.log('scene', scene);
+
             try {
                 await Promise.all([
-                    sceneRef.current.viewer.scene.open(
-                        service3dUrl,
-                        'pipeline_scene',
-                        {
+                    scene
+                        .open(service3dUrl, 'pipeline_scene', {
                             autoSetView: false,
-                        }
-                    ),
-                    sceneRef.current?.viewer.scene.open(
-                        service3dUrl,
-                        'device_scene',
-                        {
+                        })
+                        .then((layers) => {
+                            console.log(
+                                '==========================layers1: ',
+                                layers
+                            );
+                            // layers.forEach((layer) => {
+
+                            // });
+                            return layers;
+                        }),
+                    scene
+                        .open(service3dUrl, 'device_scene', {
                             autoSetView: false,
-                        }
-                    ),
+                        })
+                        .then((layers) => {
+                            console.log(
+                                '==========================layers2: ',
+                                layers
+                            );
+                            // layers.forEach((layer) => {
+
+                            // });
+                            return layers;
+                        }),
+                    ,
                 ]);
             } catch (error) {
                 console.log('error: ', error);
@@ -190,7 +238,7 @@ export const useCesium = (
 
     useEffect(() => {
         initScene();
-        addPipe(baseConfig);
+        addPipe();
 
         return () => {
             console.log('-----------销毁');
@@ -201,7 +249,7 @@ export const useCesium = (
             //     setLocalIsReady(false);
             // }
         };
-    }, [baseConfig]);
+    }, []);
 
     return {
         coreCesium: sceneRef.current,

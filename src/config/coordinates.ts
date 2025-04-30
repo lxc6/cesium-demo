@@ -26,12 +26,12 @@ export const PRESET_LOCATIONS = {
             roll: 0,
         },
     },
-    BEIJING: {
-        name: '北京',
+    ANQING: {
+        name: '安庆',
         position: {
-            longitude: 116.3,
-            latitude: 39.9,
-            height: 800,
+            longitude: 117.028,
+            latitude: 30.532,
+            height: 500,
         },
         camera: {
             heading: 0,
@@ -39,6 +39,19 @@ export const PRESET_LOCATIONS = {
             roll: 0,
         },
     },
+    // BEIJING: {
+    //     name: '北京',
+    //     position: {
+    //         longitude: 116.3,
+    //         latitude: 39.9,
+    //         height: 800,
+    //     },
+    //     camera: {
+    //         heading: 0,
+    //         pitch: -45,
+    //         roll: 0,
+    //     },
+    // },
     // XIAN: {
     //     name: '西安',
     //     position: {

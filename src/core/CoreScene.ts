@@ -7,7 +7,7 @@ import { AnalysisManager } from '../tools/AnalysisManager';
 // import { MeasureManager } from '../tools/MeasureManager';
 // import { DrawManager } from '../tools/DrawManager';
 import { SceneOptions, ViewerOptions } from '../types';
-import { bingMap } from '../utils/providers';
+import { bingMap, localMap } from '../utils/providers';
 import { useCesiumStore } from '@/store/cesium';
 import { getRainShader, getSnowShader, getBloomShader } from '../shaders';
 
@@ -50,6 +50,9 @@ export class CoreScene {
             this.setupResizeHandler();
 
             // 初始化完成后更新状态
+            // console.log('isReady', isReady);
+            console.log('------------this--------', this);
+
             setCoreCesium(this);
             setIsReady(true);
         } catch (error) {
@@ -99,8 +102,10 @@ export class CoreScene {
         this.viewer = new Cesium.Viewer(container, {
             ...defaultOptions,
             ...options,
-            imageryProvider: bingMap(),
+            // imageryProvider: bingMap(),
         });
+
+        // this.viewer.imageryLayers.addImageryProvider(localMap());
         console.log('this.viewer------------', this.viewer);
     }
 

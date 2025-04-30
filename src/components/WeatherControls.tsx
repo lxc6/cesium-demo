@@ -1,20 +1,20 @@
 import { useState, useEffect } from 'react';
-import { CoreScene } from '../core/CoreScene';
+import { useCesiumStore } from '@/store/cesium';
 import './WeatherControls.scss';
 
-interface WeatherControlsProps {
-    coreCesium: CoreScene;
-}
-
-const WeatherControls: React.FC<WeatherControlsProps> = ({ coreCesium }) => {
+const WeatherControls: React.FC<any> = () => {
+    // 从 store 获取全局状态
+    const { coreCesium, isReady, setIsReady } = useCesiumStore();
     const [weatherType, setWeatherType] = useState<'none' | 'rain' | 'snow'>(
         'none'
     );
     const [intensity, setIntensity] = useState(0.5);
     const [isExpanded, setIsExpanded] = useState(true);
-    const [isReady, setIsReady] = useState(false);
+    // const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
+        console.log('coreCesium', coreCesium);
+
         // 检查场景是否准备就绪
         if (coreCesium && coreCesium.viewer && !coreCesium.isSceneDestroyed) {
             setIsReady(true);
@@ -25,7 +25,7 @@ const WeatherControls: React.FC<WeatherControlsProps> = ({ coreCesium }) => {
         if (!isReady) return;
         try {
             setWeatherType(type);
-            coreCesium.setWeatherEffect(type, intensity);
+            coreCesium?.setWeatherEffect(type, intensity);
         } catch (error) {
             console.error('设置天气效果失败:', error);
         }
@@ -38,7 +38,7 @@ const WeatherControls: React.FC<WeatherControlsProps> = ({ coreCesium }) => {
         try {
             const value = parseFloat(event.target.value) / 100;
             setIntensity(value);
-            coreCesium.setWeatherEffect(weatherType, value);
+            coreCesium?.setWeatherEffect(weatherType, value);
         } catch (error) {
             console.error('设置天气强度失败:', error);
         }

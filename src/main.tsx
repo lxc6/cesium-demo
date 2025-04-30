@@ -9,15 +9,20 @@ import '../style/global.scss';
 const App = () => {
     const { loaded, error } = useCesiumScript();
     const getBaseConfig = useCesiumStore((state) => state.getBaseConfig);
+    const [configLoaded, setConfigLoaded] = React.useState(false);
 
     useEffect(() => {
-        if (loaded) {
-            getBaseConfig();
-        }
+        const initConfig = async () => {
+            if (loaded) {
+                await getBaseConfig();
+                setConfigLoaded(true);
+            }
+        };
+        initConfig();
     }, [loaded, getBaseConfig]);
 
     if (error) return <div>Failed to load Cesium</div>;
-    if (!loaded) return <div>Loading Cesium...</div>;
+    if (!loaded || !configLoaded) return <div>Loading Cesium...</div>;
 
     return (
         <React.StrictMode>

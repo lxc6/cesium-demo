@@ -10,7 +10,7 @@ interface LocationControlsProps {
 
 const LocationControls: React.FC<LocationControlsProps> = ({ onFlyTo }) => {
     const [isExpanded, setIsExpanded] = useState(true);
-    const [activeLocation, setActiveLocation] = useState<string>('HAINAN');
+    const [activeLocation, setActiveLocation] = useState<string>('ANQING');
 
     const handleLocationChange = (
         key: string,
