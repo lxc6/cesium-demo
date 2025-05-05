@@ -32,6 +32,7 @@ export class EventSystem {
             if (event.position) {
                 const picked = this.viewer.scene.pick(event.position);
                 const position = this.viewer.scene.pickPosition(event.position);
+                console.log('picked: ', picked);
                 console.log('position: ', position);
 
                 this.emit('click', {
