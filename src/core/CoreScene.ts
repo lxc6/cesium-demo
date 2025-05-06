@@ -131,34 +131,45 @@ export class CoreScene {
     private setupBasicConfigs() {
         const { scene } = this.viewer;
 
-        scene.debugShowFramesPerSecond = true; // 显示帧率,帧率与显示流畅度有关，或说与显卡有关
-        // 基础场景配置
-        scene.globe.enableLighting = true; //启用场景光源照亮地球
-        scene.globe.depthTestAgainstTerrain = true; // 启用地形遮挡
-        scene.globe.showSkirts = false; // 关闭裙边，去掉网格
-        scene.globe.baseColor = Cesium.Color.WHITE;
+        // 场景基础配置
+        scene.debugShowFramesPerSecond = true; // 显示帧率
+        scene.useDepthPicking = true; // 启用深度缓冲区拾取
+        scene.backgroundColor = new Cesium.Color(0, 0, 0, 0);
 
-        // 大气和天空盒配置
+        // 地球配置
+        scene.globe.enableLighting = true; // 启用场景光照
+        scene.globe.depthTestAgainstTerrain = true; // 启用地形遮挡
+        scene.globe.showSkirts = false; // 关闭裙边
+        scene.globe.baseColor = Cesium.Color.WHITE;
+        scene.globe.tileCacheSize = 1000; // 设置缓存大小
+
+        // 大气和天空盒
         if (scene.skyAtmosphere) {
             scene.skyAtmosphere.show = true;
+            scene.skyAtmosphere.brightnessShift = 0.2; // 亮度调整
+            scene.skyAtmosphere.hueShift = 0.0; // 色调调整
+            scene.skyAtmosphere.saturationShift = 0.1; // 饱和度调整
         }
+
+        // 雾效果
         scene.fog.enabled = true;
         scene.fog.density = 0.0001;
         scene.fog.screenSpaceErrorFactor = 2.0;
+        scene.fog.minimumBrightness = 0.1;
 
-        scene.useDepthPicking = true; // 启用使用深度缓冲区进行拾取
-        scene.backgroundColor = new Cesium.Color(0, 0, 0, 0);
+        // 相机控制
+        scene.screenSpaceCameraController.enableCollisionDetection = true;
+        scene.screenSpaceCameraController.minimumZoomDistance = -100;
+        scene.screenSpaceCameraController.maximumZoomDistance = 20000000;
+        scene.screenSpaceCameraController.enableTilt = true;
 
-        // scene.undergroundMode = true; // 设置开启地下场景
-        scene.screenSpaceCameraController.enableCollisionDetection = true; // 设置鼠标进去地下 根据鼠标输入修改相机的位置和方向，应用于画布
-        scene.screenSpaceCameraController.minimumZoomDistance = -100; // 设置相机最小缩放距离,距离地表-1000米
-
-        // 移除默认的版权信息
+        // 移除默认版权信息
         this.removeDefaultCredits();
 
-        // viewer配置
-        this.viewer.resolutionScale = window.devicePixelRatio; //是否支持图像渲染像素化处理
-        this.viewer.shadows = false; // 是否显示阴影
+        // 视图配置
+        this.viewer.resolutionScale = window.devicePixelRatio;
+        this.viewer.shadows = false;
+        this.viewer.scene.globe.enableLighting = true;
     }
 
     /**
@@ -169,14 +180,29 @@ export class CoreScene {
         const { scene } = this.viewer;
 
         // 性能优化配置
-        scene.fog.enabled = true;
-        scene.fog.density = 0.0001;
-        scene.postProcessStages.fxaa.enabled = true;
-        scene.globe.maximumScreenSpaceError = 2;
-        scene.globe.tileCacheSize = 1000;
+        scene.postProcessStages.fxaa.enabled = true; // 启用FXAA抗锯齿
+        scene.globe.maximumScreenSpaceError = 2; // 设置地形细节级别
+        scene.globe.tileCacheSize = 1000; // 设置瓦片缓存大小
+        scene.globe.preloadSiblings = false; // 禁用兄弟瓦片预加载
+        scene.globe.enableLighting = true; // 启用光照
 
-        // 设置分辨率缩放
+        // GPU性能优化
+        scene.logarithmicDepthBuffer = false; // 禁用对数深度缓冲
+        scene.requestRenderMode = true; // 按需渲染
+        scene.maximumRenderTimeChange = 0.0; // 渲染时间变化阈值
+
+        // 内存优化
+        // scene.globe.tileLoadProgressEvent = true; // 启用瓦片加载进度事件
+        scene.globe.terrainExaggeration = 1.0; // 地形夸张系数
+
+        // 分辨率和帧率优化
         this.viewer.resolutionScale = window.devicePixelRatio;
+        this.viewer.targetFrameRate = 60; // 目标帧率
+
+        // 设置默认视图参数
+        scene.globe.baseColor = Cesium.Color.WHITE;
+        scene.globe.maximumScreenSpaceError = 2; // 更精细的地形渲染
+        scene.globe.tileCacheSize = 1000; // 更大的缓存
     }
 
     /**
@@ -184,7 +210,9 @@ export class CoreScene {
      * @private
      */
     private setupTimeConfig(): void {
-        // 设置时间循环
+        const { clock, scene } = this.viewer;
+
+        // 设置默认时间范围
         const startTime = Cesium.JulianDate.fromDate(
             new Date(2024, 0, 1, 11, 0, 0) // 上午11点
         );
@@ -192,21 +220,36 @@ export class CoreScene {
             new Date(2024, 0, 1, 14, 0, 0) // 下午2点
         );
 
-        // 设置时钟起止时间
-        this.viewer.clock.startTime = startTime;
-        this.viewer.clock.stopTime = endTime;
-        this.viewer.clock.currentTime = startTime;
-        this.viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; // 循环模式
-        // this.viewer.clock.multiplier = 1200; // 时间流逝速度
-        this.viewer.clock.multiplier = 1; // 时间流逝速度
-        this.viewer.clock.shouldAnimate = true; // 开启时间动画
+        // 时钟配置
+        clock.startTime = startTime;
+        clock.stopTime = endTime;
+        clock.currentTime = startTime;
+        clock.clockRange = Cesium.ClockRange.LOOP_STOP; // 循环模式
+        clock.multiplier = 1.0; // 时间流逝速度
+        clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK; // 时钟步进模式
+        clock.shouldAnimate = true; // 开启时间动画
 
-        // 设置场景照明
-        this.viewer.scene.globe.enableLighting = true;
+        // 场景照明配置
+        scene.globe.enableLighting = true; // 启用全球照明
+        scene.globe.dynamicAtmosphereLighting = true; // 启用动态大气照明
+        scene.globe.dynamicAtmosphereLightingFromSun = true; // 从太阳获取照明
+
+        // 阴影配置
         this.viewer.shadows = true;
+        scene.shadowMap.enabled = true;
+        scene.shadowMap.softShadows = true; // 启用柔和阴影
+        scene.shadowMap.size = 2048; // 阴影贴图大小
 
-        // 添加太阳光照效果
-        // this.viewer.scene.sun = new Cesium.Sun();
+        // 添加太阳和月亮
+        scene.sun = new Cesium.Sun();
+        scene.moon = new Cesium.Moon();
+
+        // // 设置默认光照
+        // scene.light = new Cesium.DirectionalLight({
+        //     direction: scene.sun.position,
+        //     intensity: 2.0,
+        //     color: new Cesium.Color(1.0, 1.0, 1.0, 1.0),
+        // });
     }
 
     /**
