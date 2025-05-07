@@ -12,6 +12,7 @@
 	"dependencies": {
 		"@cesium/engine": "^15.0.0",
 		"@types/cesium": "^1.67.14",
+		"antd": "^5.24.9",
 		"axios": "^1.8.4",
 		"cesium": "1.67",
 		"react": "^18.2.0",

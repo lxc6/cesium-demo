@@ -4,9 +4,9 @@ import { SceneOptions } from '../types';
 import { EventCallback } from '../types/events';
 import { CameraPosition, FlyToOptions } from '../types/camera';
 import { EntityOptions } from '../types/entity';
-
 import { useCesiumStore } from '@/store/cesium';
 import axios from 'axios';
+import axiosHttp from '@/api';
 
 const baseUrl = import.meta.env.VITE_PROXY_DOMAIN_REAL;
 /** Cesium Hook 返回类型 */
@@ -151,18 +151,10 @@ export const useCesium = (
     };
 
     const getScene = async (modelId: any) => {
-        console.log('import.meta.env', import.meta.env);
-
-        const { data } = await axios.get(
+        const { data } = await axiosHttp.get(
             `http://3d.dev.tech/gateway/twins3d/model/showArea/findModelInfo`,
-
             {
-                headers: {
-                    Authorization: `Bearer RPlEtTDIDItXIEjquuL6BxsPl1DMYdWQNoeBBPtdqap1Vl4mudIZVrk6bD6h7bJQ`,
-                },
-                params: {
-                    modelId,
-                },
+                modelId,
             }
         );
         console.log('data: ', data);
@@ -186,19 +178,18 @@ export const useCesium = (
             console.log('baseConfig.modelId', baseConfig.modelId);
             const viewer = sceneRef.current.viewer;
             const { scene } = viewer;
-
-            const datas = await getScene(baseConfig.modelId);
-            console.log('datas----------: ', datas);
-            // await sceneRef.current.viewer.scene.open(
-            //     service3dUrl,
-            //     'device_scene',
-            //     {
-            //         autoSetView: false,
-            //     }
-            // );
-            console.log('scene', scene);
-
             try {
+                const datas = await getScene(baseConfig.modelId);
+                console.log('datas----------: ', datas);
+                // await sceneRef.current.viewer.scene.open(
+                //     service3dUrl,
+                //     'device_scene',
+                //     {
+                //         autoSetView: false,
+                //     }
+                // );
+                console.log('scene', scene);
+
                 await Promise.all([
                     scene
                         .open(service3dUrl, 'pipeline_scene', {

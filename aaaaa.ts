@@ -7,6 +7,7 @@ export interface ViteEnv {
     VITE_CONTEXT_PATH: string;
     VITE_SERVICE_PATH: string;
     VITE_PROXY_DOMAIN_REAL: string;
+    VITE_GIS_SERVICE_PATH: string;
 }
 export const handleEnv = (envConf: Record<string, string>) => {
     // 此处为默认值，无需修改
@@ -15,6 +16,7 @@ export const handleEnv = (envConf: Record<string, string>) => {
         VITE_SERVICE_PATH: '',
         VITE_CONTEXT_PATH: '/',
         VITE_PROXY_DOMAIN_REAL: '',
+        VITE_GIS_SERVICE_PATH: '',
     };
     Object.keys(envConf).forEach((index) => {
         switch (index) {
@@ -33,13 +35,10 @@ export default ({ mode }: ConfigEnv) => {
         VITE_PORT,
         VITE_CONTEXT_PATH,
         VITE_SERVICE_PATH,
+        VITE_GIS_SERVICE_PATH,
         VITE_PROXY_DOMAIN_REAL,
     } = handleEnv(loadEnv(mode, resolve(__dirname, 'env')));
     const isDev = mode === 'development';
-
-    console.log('VITE_SERVICE_PATH', VITE_SERVICE_PATH);
-    console.log('VITE_PROXY_DOMAIN_REAL', VITE_PROXY_DOMAIN_REAL);
-
     return {
         base: VITE_CONTEXT_PATH,
         envDir: resolve(__dirname, 'env'),
@@ -51,6 +50,8 @@ export default ({ mode }: ConfigEnv) => {
 
         // 跨域代理，生产环境不走这里
         server: {
+            // 是否开启 https
+            https: false,
             // 端口号
             port: VITE_PORT,
             host: '0.0.0.0',
@@ -60,6 +61,11 @@ export default ({ mode }: ConfigEnv) => {
             proxy: {
                 // balance
                 [VITE_SERVICE_PATH]: {
+                    target: VITE_PROXY_DOMAIN_REAL,
+                    changeOrigin: true,
+                },
+                // gis
+                [VITE_GIS_SERVICE_PATH]: {
                     target: VITE_PROXY_DOMAIN_REAL,
                     changeOrigin: true,
                 },

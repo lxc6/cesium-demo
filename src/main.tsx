@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
+import { loginApi } from '@/api/modules/login';
 import { router } from './router';
 import { useCesiumScript } from './hooks/useCesiumScript';
 import { useCesiumStore } from './store/cesium';
