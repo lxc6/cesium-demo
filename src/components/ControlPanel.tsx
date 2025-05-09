@@ -14,7 +14,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ onFlyTo }) => {
     // 从 store 获取全局状态
     const { coreCesium, isReady } = useCesiumStore();
     useEffect(() => {
-        console.log('coreCesium', coreCesium);
+        // console.log('coreCesium', coreCesium);
     }, [coreCesium]);
     return (
         <div className='control-panel'>

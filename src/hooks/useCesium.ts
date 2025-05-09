@@ -158,7 +158,7 @@ export const useCesium = (
                 modelId,
             }
         );
-        console.log('data---------------------------: ', data);
+        // console.log('data---------------------------: ', data);
 
         if (!data) {
             return;
@@ -189,7 +189,7 @@ export const useCesium = (
                 //         autoSetView: false,
                 //     }
                 // );
-                console.log('scene', scene);
+                // console.log('scene', scene);
 
                 await Promise.all([
                     scene
@@ -197,10 +197,10 @@ export const useCesium = (
                             autoSetView: false,
                         })
                         .then((layers) => {
-                            console.log(
-                                '==========================layers1: ',
-                                layers
-                            );
+                            // console.log(
+                            //     '==========================layers1: ',
+                            //     layers
+                            // );
                             // layers.forEach((layer) => {
 
                             // });
@@ -211,10 +211,10 @@ export const useCesium = (
                             autoSetView: false,
                         })
                         .then((layers) => {
-                            console.log(
-                                '==========================layers2: ',
-                                layers
-                            );
+                            // console.log(
+                            //     '==========================layers2: ',
+                            //     layers
+                            // );
                             // layers.forEach((layer) => {
 
                             // });

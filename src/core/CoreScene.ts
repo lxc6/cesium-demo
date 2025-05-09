@@ -102,7 +102,7 @@ export class CoreScene {
         this.viewer = new Cesium.Viewer(container, {
             ...defaultOptions,
             ...options,
-            imageryProvider: bingMap(),
+            // imageryProvider: bingMap(), // 底图服务
         });
 
         // this.viewer.imageryLayers.addImageryProvider(localMap());

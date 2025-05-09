@@ -3,9 +3,9 @@ export const PRESET_LOCATIONS = {
     HAINAN: {
         name: '海南',
         position: {
-            longitude: 109.18,
-            latitude: 19.76,
-            height: 800,
+            longitude: 109.184,
+            latitude: 19.759,
+            height: 280,
         },
         camera: {
             heading: 0,

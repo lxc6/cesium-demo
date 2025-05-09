@@ -13,7 +13,7 @@ const WeatherControls: React.FC<any> = () => {
     // const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
-        console.log('coreCesium', coreCesium);
+        // console.log('coreCesium', coreCesium);
 
         // 检查场景是否准备就绪
         if (coreCesium && coreCesium.viewer && !coreCesium.isSceneDestroyed) {
