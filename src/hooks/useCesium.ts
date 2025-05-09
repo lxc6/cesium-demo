@@ -152,12 +152,13 @@ export const useCesium = (
 
     const getScene = async (modelId: any) => {
         const { data } = await axiosHttp.get(
-            `http://3d.dev.tech/gateway/twins3d/model/showArea/findModelInfo`,
+            `/twins3d/model/showArea/findModelInfo`,
+            // `http://3d.dev.tech/gateway/twins3d/model/showArea/findModelInfo`,
             {
                 modelId,
             }
         );
-        console.log('data: ', data);
+        console.log('data---------------------------: ', data);
 
         if (!data) {
             return;

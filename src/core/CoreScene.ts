@@ -139,9 +139,11 @@ export class CoreScene {
         // 地球配置
         scene.globe.enableLighting = true; // 启用场景光照
         scene.globe.depthTestAgainstTerrain = true; // 启用地形遮挡
-        scene.globe.showSkirts = false; // 关闭裙边
         scene.globe.baseColor = Cesium.Color.WHITE;
+        scene.globe.showSkirts = false; // 关闭裙边
         scene.globe.tileCacheSize = 1000; // 设置缓存大小
+        scene.globe.maximumScreenSpaceError = 2; // 更精细的地形渲染
+        scene.globe.preloadSiblings = false; // 禁用兄弟瓦片预加载
 
         // 大气和天空盒
         if (scene.skyAtmosphere) {
@@ -159,8 +161,8 @@ export class CoreScene {
 
         // 相机控制
         scene.screenSpaceCameraController.enableCollisionDetection = true;
-        scene.screenSpaceCameraController.minimumZoomDistance = -100;
-        scene.screenSpaceCameraController.maximumZoomDistance = 20000000;
+        scene.screenSpaceCameraController.minimumZoomDistance = -10;
+        scene.screenSpaceCameraController.maximumZoomDistance = 10000;
         scene.screenSpaceCameraController.enableTilt = true;
 
         // 移除默认版权信息
@@ -180,13 +182,11 @@ export class CoreScene {
         const { scene } = this.viewer;
 
         // 性能优化配置
+        scene.fxaa = true; // 开启抗锯齿
         scene.postProcessStages.fxaa.enabled = true; // 启用FXAA抗锯齿
-        scene.globe.maximumScreenSpaceError = 2; // 设置地形细节级别
-        scene.globe.tileCacheSize = 1000; // 设置瓦片缓存大小
-        scene.globe.preloadSiblings = false; // 禁用兄弟瓦片预加载
-        scene.globe.enableLighting = true; // 启用光照
+        // scene.undergroundMode = true; // 设置开启地下场景
+        // scene.terrainProvider.isCreateSkirt = false; // 关闭裙边，去掉网格
 
-        // GPU性能优化
         scene.logarithmicDepthBuffer = false; // 禁用对数深度缓冲
         scene.requestRenderMode = true; // 按需渲染
         scene.maximumRenderTimeChange = 0.0; // 渲染时间变化阈值
@@ -194,15 +194,6 @@ export class CoreScene {
         // 内存优化
         // scene.globe.tileLoadProgressEvent = true; // 启用瓦片加载进度事件
         scene.globe.terrainExaggeration = 1.0; // 地形夸张系数
-
-        // 分辨率和帧率优化
-        this.viewer.resolutionScale = window.devicePixelRatio;
-        this.viewer.targetFrameRate = 60; // 目标帧率
-
-        // 设置默认视图参数
-        scene.globe.baseColor = Cesium.Color.WHITE;
-        scene.globe.maximumScreenSpaceError = 2; // 更精细的地形渲染
-        scene.globe.tileCacheSize = 1000; // 更大的缓存
     }
 
     /**

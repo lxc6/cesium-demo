@@ -1,0 +1,21 @@
+{
+    "id": "f24d1b85-aa5f-492f-add5-37ded9dc8588",
+    "supermap_iserver_url": "http://192.168.1.100:8091",
+    "supermap_iserver_account": "",
+    "supermap_iserver_password": "",
+    "sm3d_data_service": "",
+    "sm2d_data_service": "data_2d_aq_gis_test3",
+    "map_service": "map_aq_gis_test3",
+    "sm3d_service": "",
+    "sm3d_rvt_data_service": "data_rvt_3d_aq_gis_test3",
+    "sm3d_rvt_service": "service_rvt_3d_aq_gis_test3",
+    "spatial_analysis_service": "",
+    "left_bottom": "117.01007080078125,30.51771354675293",
+    "top_right": "117.03079223632812,30.54188346862793",
+    "center_point": "",
+    "work_space": "aq_gis_test3",
+    "sm3d_work_space": "aq_gis_test3_3d",
+    "epsg": "+proj=tmerc +lat_0=0 +lon_0=117 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs",
+    "epsg_code": 4490,
+    "basemap_service": "map-ugcv5-aqgistest3basemapscene"
+}

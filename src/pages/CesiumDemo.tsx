@@ -8,8 +8,8 @@ import './index.scss';
 
 const CesiumDemo = () => {
     const { isReady, camera } = useCesium('cesiumContainer', {
-        defaultImageryProvider: localMap(), // 加载厂区 超图高清底图  安庆
-        // defaultImageryProvider: superMap(), // 加载厂区 超图高清底图  榆林
+        // defaultImageryProvider: localMap(), // 加载厂区 超图高清底图  安庆
+        defaultImageryProvider: superMap(), // 加载厂区 超图高清底图  榆林
         // terrainProvider: Cesium.createWorldTerrain(), // 加载地形
     });
 
@@ -17,8 +17,8 @@ const CesiumDemo = () => {
         if (camera) {
             // 设置默认位置  海南
             camera?.flyTo({
-                position: PRESET_LOCATIONS.ANQING.position,
-                ...PRESET_LOCATIONS.ANQING.camera,
+                position: PRESET_LOCATIONS.HAINAN.position,
+                ...PRESET_LOCATIONS.HAINAN.camera,
                 duration: 2,
             });
         }
