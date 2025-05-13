@@ -5,11 +5,11 @@ export { CoreScene } from '@/core/CoreScene';
 export { useCesium } from '@/hooks/useCesium';
 
 // Tools
-export { CameraManager } from '@/tools/CameraManager';
-export { EntityManager } from '@/tools/EntityManager';
-export { EventSystem } from '@/tools/EventSystem';
-export { LayerManager } from '@/tools/LayerManager';
-export { TerrainService } from '@/tools/TerrainService';
+export { CameraManager } from '@/business/CameraManager';
+export { EntityManager } from '@/business/EntityManager';
+export { EventSystem } from '@/business/EventSystem';
+export { LayerManager } from '@/business/LayerManager';
+export { TerrainService } from '@/business/TerrainService';
 
 // Utils
 export * from '@/utils/providers';

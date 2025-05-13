@@ -1,9 +1,9 @@
-import { CameraManager } from '../tools/CameraManager';
-import { EntityManager } from '../tools/EntityManager';
-import { LayerManager } from '../tools/LayerManager';
-import { EventSystem } from '../tools/EventSystem';
-import { TerrainService } from '../tools/TerrainService';
-import { AnalysisManager } from '../tools/AnalysisManager';
+import { CameraManager } from '../business/CameraManager';
+import { EntityManager } from '../business/EntityManager';
+import { LayerManager } from '../business/LayerManager';
+import { EventSystem } from '../business/EventSystem';
+import { TerrainService } from '../business/TerrainService';
+import { AnalysisManager } from '../business/AnalysisManager';
 // import { MeasureManager } from '../tools/MeasureManager';
 // import { DrawManager } from '../tools/DrawManager';
 import { SceneOptions, ViewerOptions } from '../types';

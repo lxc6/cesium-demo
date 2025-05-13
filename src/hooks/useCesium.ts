@@ -206,21 +206,22 @@ export const useCesium = (
                             // });
                             return layers;
                         }),
-                    scene
-                        .open(service3dUrl, 'device_scene', {
-                            autoSetView: false,
-                        })
-                        .then((layers) => {
-                            // console.log(
-                            //     '==========================layers2: ',
-                            //     layers
-                            // );
-                            // layers.forEach((layer) => {
+                    // 暂不展示设备
+                    // scene
+                    //     .open(service3dUrl, 'device_scene', {
+                    //         autoSetView: false,
+                    //     })
+                    //     .then((layers) => {
+                    //         // console.log(
+                    //         //     '==========================layers2: ',
+                    //         //     layers
+                    //         // );
+                    //         // layers.forEach((layer) => {
 
-                            // });
-                            return layers;
-                        }),
-                    ,
+                    //         // });
+                    //         return layers;
+                    //     }),
+                    // ,
                 ]);
             } catch (error) {
                 console.log('error: ', error);
