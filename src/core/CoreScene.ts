@@ -84,21 +84,22 @@ export class CoreScene {
             terrainProvider: new Cesium.EllipsoidTerrainProvider(), //地形
             // 浏览器支持，则使用 WebGL渲染上下文
             contextOptions: {
-                webgl: {
-                    alpha: true,
-                    depth: true,
-                    stencil: true,
-                    antialias: true,
-                    premultipliedAlpha: true,
-                    preserveDrawingBuffer: true,
-                    failIfMajorPerformanceCaveat: false,
-                },
+                // webgl2 msaa
+                maxDrawingBufferWidth: 8640,
+                maxDrawingBufferHeight: 2160,
+                msaaLevel: 8,
+                requestWebgl2: true,
             },
 
             // sceneMode: Cesium.SceneMode.COLUMBUS_VIEW, // 指定场景显示模式 地形
             // terrain: Cesium.Terrain.fromWorldTerrain(), // 使用 Cesium 全球地形数据来渲染地球的地形
         };
 
+        // // 解决管点管线错位问题
+        // const obj = [6378137.0, 6378137.0, 6356752.3142451793];
+        // Cesium.Ellipsoid.WGS84 = Object.freeze(
+        //     new Cesium.Ellipsoid(obj[0], obj[1], obj[2])
+        // );
         this.viewer = new Cesium.Viewer(container, {
             ...defaultOptions,
             ...options,
@@ -133,45 +134,42 @@ export class CoreScene {
 
         // 场景基础配置
         scene.debugShowFramesPerSecond = true; // 显示帧率
-        scene.useDepthPicking = true; // 启用深度缓冲区拾取
-        scene.backgroundColor = new Cesium.Color(0, 0, 0, 0);
+        scene.useDepthPicking = false; // 禁用深度缓冲区拾取以提高性能
+        scene.backgroundColor = new Cesium.Color(3, 29, 82, 0.95);
 
         // 地球配置
-        scene.globe.enableLighting = true; // 启用场景光照
-        scene.globe.depthTestAgainstTerrain = true; // 启用地形遮挡
+        scene.globe.enableLighting = false; // 禁用场景光照以提高性能
+        scene.globe.depthTestAgainstTerrain = false; // 禁用地形遮挡以提高性能
         scene.globe.baseColor = Cesium.Color.WHITE;
-        scene.globe.showSkirts = false; // 关闭裙边
-        scene.globe.tileCacheSize = 1000; // 设置缓存大小
-        scene.globe.maximumScreenSpaceError = 2; // 更精细的地形渲染
+        scene.globe.showSkirts = true; // 启用裙边以提高边缘过渡效果
+        scene.globe.tileCacheSize = 2000; // 增加缓存大小
+        scene.globe.maximumScreenSpaceError = 2; // 调整地形渲染精度，权衡性能和质量
         scene.globe.preloadSiblings = false; // 禁用兄弟瓦片预加载
 
-        // 大气和天空盒
+        // 大气和天空盒 - 禁用不必要的效果
         if (scene.skyAtmosphere) {
-            scene.skyAtmosphere.show = true;
-            scene.skyAtmosphere.brightnessShift = 0.2; // 亮度调整
-            scene.skyAtmosphere.hueShift = 0.0; // 色调调整
-            scene.skyAtmosphere.saturationShift = 0.1; // 饱和度调整
+            scene.skyAtmosphere.show = false;
+            // scene.skyAtmosphere.brightnessShift = 0.2; // 亮度调整
+            // scene.skyAtmosphere.hueShift = 0.0; // 色调调整
+            // scene.skyAtmosphere.saturationShift = 0.1; // 饱和度调整
         }
 
-        // 雾效果
-        scene.fog.enabled = true;
-        scene.fog.density = 0.0001;
-        scene.fog.screenSpaceErrorFactor = 2.0;
-        scene.fog.minimumBrightness = 0.1;
+        // 禁用雾效果
+        scene.fog.enabled = false;
 
-        // 相机控制
-        scene.screenSpaceCameraController.enableCollisionDetection = true;
-        scene.screenSpaceCameraController.minimumZoomDistance = -10;
-        scene.screenSpaceCameraController.maximumZoomDistance = 10000;
+        // 相机控制优化
+        scene.screenSpaceCameraController.enableCollisionDetection = false; // 禁用碰撞检测
+        scene.screenSpaceCameraController.minimumZoomDistance = -10.0;
+        scene.screenSpaceCameraController.maximumZoomDistance = 20000.0;
         scene.screenSpaceCameraController.enableTilt = true;
 
         // 移除默认版权信息
         this.removeDefaultCredits();
 
-        // 视图配置
-        this.viewer.resolutionScale = window.devicePixelRatio;
-        this.viewer.shadows = false;
-        this.viewer.scene.globe.enableLighting = true;
+        // 视图配置优化
+        this.viewer.resolutionScale = window.devicePixelRatio; // 使用标准分辨率
+        this.viewer.shadows = false; // 禁用阴影
+        this.viewer.scene.globe.enableLighting = false; // 禁用光照
     }
 
     /**
@@ -181,19 +179,26 @@ export class CoreScene {
     private setupPerformanceConfigs() {
         const { scene } = this.viewer;
 
-        // 性能优化配置
-        scene.fxaa = true; // 开启抗锯齿
-        scene.postProcessStages.fxaa.enabled = true; // 启用FXAA抗锯齿
-        // scene.undergroundMode = true; // 设置开启地下场景
-        // scene.terrainProvider.isCreateSkirt = false; // 关闭裙边，去掉网格
-
-        scene.logarithmicDepthBuffer = false; // 禁用对数深度缓冲
+        // 性能和渲染质量配置
+        scene.fxaa = true; // 启用FXAA抗锯齿
+        scene.postProcessStages.fxaa.enabled = true; // 启用FXAA后处理
+        scene.logarithmicDepthBuffer = true; // 启用对数深度缓冲以提高深度精度
         scene.requestRenderMode = true; // 按需渲染
-        scene.maximumRenderTimeChange = 0.0; // 渲染时间变化阈值
+        scene.maximumRenderTimeChange = 0.0; // 实时渲染以保证画面质量
 
-        // 内存优化
-        // scene.globe.tileLoadProgressEvent = true; // 启用瓦片加载进度事件
-        scene.globe.terrainExaggeration = 1.0; // 地形夸张系数
+        // 相机优化
+        scene.screenSpaceCameraController.enableInputs = true;
+        scene.screenSpaceCameraController.inertiaSpin = 0.9; // 调整惯性
+        scene.screenSpaceCameraController.inertiaTranslate = 0.9;
+        scene.screenSpaceCameraController.minimumZoomDistance = 1.0;
+        scene.screenSpaceCameraController.maximumZoomDistance = 20000.0;
+
+        // 渲染质量优化
+        scene.globe.backFaceCulling = false; // 禁用背面裁剪以提高模型完整性
+        scene.globe.showGroundAtmosphere = true; // 启用地面大气效果以提高视觉效果
+        scene.globe.enableLighting = true; // 启用光照以提高模型立体感
+        scene.globe.maximumScreenSpaceError = 1.0; // 提高地形细节
+        scene.globe.tileCacheSize = 1000; // 增加缓存大小
     }
 
     /**
@@ -221,15 +226,15 @@ export class CoreScene {
         clock.shouldAnimate = true; // 开启时间动画
 
         // 场景照明配置
-        scene.globe.enableLighting = true; // 启用全球照明
-        scene.globe.dynamicAtmosphereLighting = true; // 启用动态大气照明
-        scene.globe.dynamicAtmosphereLightingFromSun = true; // 从太阳获取照明
+        // scene.globe.enableLighting = true; // 启用全球照明
+        // scene.globe.dynamicAtmosphereLighting = true; // 启用动态大气照明
+        // scene.globe.dynamicAtmosphereLightingFromSun = true; // 从太阳获取照明
 
         // 阴影配置
-        this.viewer.shadows = true;
-        scene.shadowMap.enabled = true;
-        scene.shadowMap.softShadows = true; // 启用柔和阴影
-        scene.shadowMap.size = 2048; // 阴影贴图大小
+        // this.viewer.shadows = true;
+        // scene.shadowMap.enabled = true;
+        // scene.shadowMap.softShadows = true; // 启用柔和阴影
+        // scene.shadowMap.size = 2048; // 阴影贴图大小
 
         // 添加太阳和月亮
         scene.sun = new Cesium.Sun();
