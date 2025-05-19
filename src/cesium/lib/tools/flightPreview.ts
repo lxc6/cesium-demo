@@ -1,4 +1,4 @@
-// import { ThreeDimensionalContextService } from '@/cesium';
+import { ThreeDimensionalContextService } from '@/cesium';
 
 /**
  * 设置飞行预览模式

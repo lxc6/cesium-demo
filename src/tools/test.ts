@@ -2,7 +2,7 @@
 //  * 用于开发中的测试函数。
 //  * 生产环境不会产生效果
 //  */
-// import { Print } from '@tvp/util';
+// import { Print } from '@/util';
 // import { Position } from '@turf/turf';
 
 // const isDev = process.env['NX_TASK_TARGET_CONFIGURATION'] !== 'production';

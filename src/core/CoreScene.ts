@@ -138,28 +138,22 @@ export class CoreScene {
         scene.backgroundColor = new Cesium.Color(3, 29, 82, 0.95);
 
         // 地球配置
-        scene.globe.enableLighting = false; // 禁用场景光照以提高性能
-        scene.globe.depthTestAgainstTerrain = false; // 禁用地形遮挡以提高性能
         scene.globe.baseColor = Cesium.Color.WHITE;
         scene.globe.showSkirts = true; // 启用裙边以提高边缘过渡效果
-        scene.globe.tileCacheSize = 2000; // 增加缓存大小
-        scene.globe.maximumScreenSpaceError = 2; // 调整地形渲染精度，权衡性能和质量
         scene.globe.preloadSiblings = false; // 禁用兄弟瓦片预加载
+        scene.globe.enableCollisionDetection = true; // 启用碰撞检测，防止穿透
 
         // 大气和天空盒 - 禁用不必要的效果
         if (scene.skyAtmosphere) {
             scene.skyAtmosphere.show = false;
-            // scene.skyAtmosphere.brightnessShift = 0.2; // 亮度调整
-            // scene.skyAtmosphere.hueShift = 0.0; // 色调调整
-            // scene.skyAtmosphere.saturationShift = 0.1; // 饱和度调整
         }
 
         // 禁用雾效果
         scene.fog.enabled = false;
 
         // 相机控制优化
-        scene.screenSpaceCameraController.enableCollisionDetection = false; // 禁用碰撞检测
-        scene.screenSpaceCameraController.minimumZoomDistance = -10.0;
+        scene.screenSpaceCameraController.enableCollisionDetection = true; // 启用碰撞检测，防止相机穿透地形
+        scene.screenSpaceCameraController.minimumZoomDistance = 1.0; // 设置最小缩放距离，防止相机过于接近地表
         scene.screenSpaceCameraController.maximumZoomDistance = 20000.0;
         scene.screenSpaceCameraController.enableTilt = true;
 
@@ -169,7 +163,6 @@ export class CoreScene {
         // 视图配置优化
         this.viewer.resolutionScale = window.devicePixelRatio; // 使用标准分辨率
         this.viewer.shadows = false; // 禁用阴影
-        this.viewer.scene.globe.enableLighting = false; // 禁用光照
     }
 
     /**
@@ -190,15 +183,15 @@ export class CoreScene {
         scene.screenSpaceCameraController.enableInputs = true;
         scene.screenSpaceCameraController.inertiaSpin = 0.9; // 调整惯性
         scene.screenSpaceCameraController.inertiaTranslate = 0.9;
-        scene.screenSpaceCameraController.minimumZoomDistance = 1.0;
-        scene.screenSpaceCameraController.maximumZoomDistance = 20000.0;
 
         // 渲染质量优化
-        scene.globe.backFaceCulling = false; // 禁用背面裁剪以提高模型完整性
+        scene.globe.backFaceCulling = true; // 启用背面裁剪以优化渲染性能
         scene.globe.showGroundAtmosphere = true; // 启用地面大气效果以提高视觉效果
         scene.globe.enableLighting = true; // 启用光照以提高模型立体感
         scene.globe.maximumScreenSpaceError = 1.0; // 提高地形细节
         scene.globe.tileCacheSize = 1000; // 增加缓存大小
+        scene.globe.depthTestAgainstTerrain = true; // 启用地形深度测试
+        scene.globe.pickTranslucentDepth = true; // 启用半透明深度拾取
     }
 
     /**

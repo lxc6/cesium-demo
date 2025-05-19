@@ -222,8 +222,12 @@ export class DrawManager {
                     polyline: {
                         positions: this.positions,
                         width: defaultStyle.lineWidth,
-                        material: defaultStyle.outlineColor,
+                        material: new Cesium.PolylineGlowMaterialProperty({
+                            glowPower: 0.2,
+                            color: defaultStyle.outlineColor,
+                        }),
                         clampToGround: true,
+                        classificationType: Cesium.ClassificationType.BOTH,
                     },
                 });
                 break;
