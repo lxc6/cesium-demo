@@ -108,6 +108,8 @@ export class DrawManager {
         // 鼠标左键点击事件
         this.handler.setInputAction(
             (event: { position: Cesium.Cartesian2 }) => {
+                console.log('this.drawingMode', this.drawingMode);
+
                 if (!this.drawingMode) return;
 
                 const cartesian = this.getCartesianFromScreenPoint(
@@ -196,8 +198,8 @@ export class DrawManager {
                 Cesium.Color.fromCssColorString('#3388ff').withAlpha(0.4),
             outlineColor: Cesium.Color.fromCssColorString('#3388ff'),
             outlineWidth: 2,
-            pointSize: 8,
-            lineWidth: 3,
+            pointSize: 12,
+            lineWidth: 4,
         };
 
         switch (this.drawingMode) {
@@ -208,7 +210,7 @@ export class DrawManager {
                         pixelSize: defaultStyle.pointSize,
                         color: defaultStyle.outlineColor,
                         outlineColor: Cesium.Color.WHITE,
-                        outlineWidth: 2,
+                        outlineWidth: 1,
                         heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
                         disableDepthTestDistance: Number.POSITIVE_INFINITY,
                     },
@@ -218,9 +220,7 @@ export class DrawManager {
             case DrawMode.Line:
                 this.tempEntity = this.viewer.entities.add({
                     polyline: {
-                        positions: new Cesium.CallbackProperty(() => {
-                            return this.positions;
-                        }, false),
+                        positions: this.positions,
                         width: defaultStyle.lineWidth,
                         material: defaultStyle.outlineColor,
                         clampToGround: true,
@@ -231,14 +231,26 @@ export class DrawManager {
             case DrawMode.Polygon:
                 this.tempEntity = this.viewer.entities.add({
                     polygon: {
-                        hierarchy: new Cesium.CallbackProperty(() => {
-                            return new Cesium.PolygonHierarchy(this.positions);
-                        }, false),
+                        hierarchy: new Cesium.PolygonHierarchy(this.positions),
                         material: defaultStyle.fillColor,
                         outline: true,
                         outlineColor: defaultStyle.outlineColor,
                         outlineWidth: defaultStyle.outlineWidth,
                         heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                        perPositionHeight: false,
+                        classificationType: Cesium.ClassificationType.BOTH,
+                    },
+                    polyline: {
+                        positions:
+                            this.positions.length >= 3
+                                ? [...this.positions, this.positions[0]]
+                                : [
+                                      ...this.positions,
+                                      this.positions[this.positions.length - 1],
+                                  ],
+                        material: defaultStyle.outlineColor,
+                        width: defaultStyle.lineWidth,
+                        clampToGround: true,
                     },
                 });
                 break;
@@ -246,11 +258,9 @@ export class DrawManager {
             case DrawMode.Rectangle:
                 this.tempEntity = this.viewer.entities.add({
                     rectangle: {
-                        coordinates: new Cesium.CallbackProperty(() => {
-                            return Cesium.Rectangle.fromCartesianArray(
-                                this.positions
-                            );
-                        }, false),
+                        coordinates: Cesium.Rectangle.fromCartesianArray(
+                            this.positions
+                        ),
                         material: defaultStyle.fillColor,
                         outline: true,
                         outlineColor: defaultStyle.outlineColor,
@@ -329,16 +339,21 @@ export class DrawManager {
             this.drawCompleteCallback(result);
         }
 
-        // 重置状态以准备下一次绘制，但保持绘制模式和实体
+        // 重置状态以准备下一次绘制
         this.moveStatus = false;
         this.positions = [];
         this.tooltip.setVisible(false);
         // 清除临时实体引用，但不从viewer中移除
         this.tempEntity = null;
 
-        // 保持事件处理器以支持连续绘制
         // 重新显示初始提示
-        this.tooltip.showAt(event.position, '<p>请单击鼠标左键开始绘制</p>');
+        const canvas = this.viewer.scene.canvas;
+        const rect = canvas.getBoundingClientRect();
+        const center = {
+            x: rect.left + rect.width / 2,
+            y: rect.top + rect.height / 2,
+        };
+        this.tooltip.showAt(center, '<p>请单击鼠标左键开始绘制</p>');
     }
 
     /**

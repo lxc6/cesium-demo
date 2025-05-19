@@ -1,15 +1,3 @@
-/**
- *  ---------------------------geometry.ts-------------------------
- *  @Example        使用示例代码
- *  @Description    geometry的使用说明
- *  @Version        0.0.1
- *  @Author         xsli1
- *  @Date           2023/5/17
- *  @Param
- *  @Return
- *  @File           libs/utility/src/lib/cesium/tools
- *  @Update         [time:user] 某用户更新此文件
- * */
 // import { DrawLine } from '../controller';
 import { courseAngle } from './coordinate';
 

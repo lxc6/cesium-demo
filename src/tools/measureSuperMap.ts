@@ -4,19 +4,6 @@
 // import { ThreeDimensionalContextService } from '../view';
 
 // /**
-//  *  ---------------------------measure.ts-------------------------
-//  *  @Example        使用示例代码
-//  *  @Description    measure的使用说明
-//  *  @Version        0.0.1
-//  *  @Author         xsli1
-//  *  @Date           2023/4/19
-//  *  @Param
-//  *  @Return
-//  *  @File           libs/feature/core/src/lib/cesium/tools
-//  *  @Update         [time:user] 某用户更新此文件
-//  * */
-
-// /**
 //  * 绘制、量算的几何对象的风格
 //  */
 // export enum ClampMode {

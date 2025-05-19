@@ -3,6 +3,7 @@ import { CoreScene } from '../core/CoreScene';
 import LocationControls from './LocationControls';
 import WeatherControls from './WeatherControls';
 import DrawControls from './DrawControls';
+import LayerControls from './LayerControls';
 import { DrawManager, DrawMode } from '@/business/DrawManager';
 
 import './ControlPanel.scss';
@@ -36,6 +37,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ onFlyTo }) => {
                     <LocationControls onFlyTo={onFlyTo} />
                     <WeatherControls />
                     <DrawControls onStartDraw={handleStartDraw} />
+                    <LayerControls />
                 </>
             )}
         </div>

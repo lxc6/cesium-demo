@@ -1,16 +1,3 @@
-/**
- *  ---------------------------coordinate.ts-------------------------
- *  @Example        使用示例代码
- *  @Description    三维坐标系的相关处理函数
- *  @Version        0.0.1
- *  @Author         xsli1
- *  @Date           2023/5/17
- *  @Param
- *  @Return
- *  @File           libs/utility/src/lib/cesium/tools
- *  @Update         [time:user] 某用户更新此文件
- * */
-
 import {
     bbox,
     lineString,

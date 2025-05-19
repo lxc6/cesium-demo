@@ -143,6 +143,27 @@ export const useCesium = (
                         console.error('初始化默认底图失败:', error);
                     }
                 }
+
+                // 获取实际的初始相机位置
+                const initialPosition: any = options?.defaultPosition || {
+                    // 海南
+                    longitude: 109.184,
+                    latitude: 19.759,
+                    height: 280,
+                    heading: 0,
+                    pitch: -45,
+                    roll: 0,
+                };
+
+                // 设置默认相机位置到store中
+                const defaultCamera: any = {
+                    id: 'default',
+                    name: '默认场景',
+                    type: 'default',
+                    camera: initialPosition,
+                    layers: [],
+                };
+                useCesiumStore.getState().setCurrentScene(defaultCamera);
                 setLocalIsReady(true);
             }
         } catch (error) {
@@ -207,21 +228,21 @@ export const useCesium = (
                             return layers;
                         }),
                     // 暂不展示设备
-                    // scene
-                    //     .open(service3dUrl, 'device_scene', {
-                    //         autoSetView: false,
-                    //     })
-                    //     .then((layers) => {
-                    //         // console.log(
-                    //         //     '==========================layers2: ',
-                    //         //     layers
-                    //         // );
-                    //         // layers.forEach((layer) => {
+                    scene
+                        .open(service3dUrl, 'device_scene', {
+                            autoSetView: false,
+                        })
+                        .then((layers) => {
+                            // console.log(
+                            //     '==========================layers2: ',
+                            //     layers
+                            // );
+                            // layers.forEach((layer) => {
 
-                    //         // });
-                    //         return layers;
-                    //     }),
-                    // ,
+                            // });
+                            return layers;
+                        }),
+                    ,
                 ]);
             } catch (error) {
                 console.log('error: ', error);
