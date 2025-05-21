@@ -1,11 +1,17 @@
+import * as Cesium from 'cesium';
+
+import { createTooltip, MouseTooltip } from '../tools/index';
+
 import {
-    createTooltip,
-    getTargetLatLng,
-    MouseTooltip,
-    screenCoordinatesToDegrees,
-    screenToTerrainGraphical,
-    toRectangleLonLat,
-} from '../tools/index';
+    BaseDraw,
+    PointDraw,
+    LineDraw,
+    PolygonDraw,
+    RectangleDraw,
+    CircleDraw,
+    DrawStyle,
+    defaultDrawStyle,
+} from './draw';
 
 export enum DrawMode {
     Point = 'Point',
@@ -14,6 +20,7 @@ export enum DrawMode {
     Rectangle = 'Rectangle',
     Circle = 'Circle',
 }
+
 export interface DrawResult {
     entity: Cesium.Entity;
     positions: Cesium.Cartesian3[];
@@ -22,22 +29,21 @@ export interface DrawResult {
 
 export type DrawCompleteCallback = (result: DrawResult) => void;
 
+/**
+ * 绘制管理器
+ * 使用策略模式管理不同类型的绘制操作
+ */
 export class DrawManager {
     private viewer: Cesium.Viewer;
-    private handler: Cesium.ScreenSpaceEventHandler;
-    private drawingMode: DrawMode | null = null;
-    private positions: Cesium.Cartesian3[] = [];
-    private tempEntity: Cesium.Entity | null = null;
+    private currentDraw: BaseDraw | null = null;
     private drawCompleteCallback: DrawCompleteCallback | null = null;
     private tooltip: MouseTooltip;
-    private moveStatus = false;
     private entities: Cesium.Entity[] = [];
+    private style: DrawStyle;
 
-    constructor(viewer: Cesium.Viewer) {
+    constructor(viewer: Cesium.Viewer, style: Partial<DrawStyle> = {}) {
         this.viewer = viewer;
-        this.handler = new Cesium.ScreenSpaceEventHandler(
-            this.viewer.scene.canvas
-        );
+        this.style = { ...defaultDrawStyle, ...style };
         this.tooltip = createTooltip(
             this.viewer.container.firstElementChild as HTMLDivElement
         );
@@ -50,307 +56,73 @@ export class DrawManager {
     /**
      * 开始绘制
      * @param mode 绘制模式
+     * @param callback 绘制完成回调
      */
     startDraw(mode: DrawMode, callback?: DrawCompleteCallback): void {
+        // 停止当前绘制
+        this.stopDraw();
+
+        // 保存回调
         this.drawCompleteCallback = callback || null;
-        this.drawingMode = mode;
-        this.positions = [];
-        this.clearTempEntity();
-        this.setupEventHandlers();
+
+        // 创建对应的绘制类实例
+        this.currentDraw = this.createDrawInstance(mode);
+
+        // 开始绘制
+        if (this.currentDraw) {
+            this.currentDraw.start().then(this.handleDrawComplete.bind(this));
+        }
     }
 
     /**
      * 停止绘制
      */
     stopDraw(): void {
-        this.drawingMode = null;
-        this.positions = [];
-        this.clearTempEntity();
-        this.removeEventHandlers();
+        if (this.currentDraw) {
+            this.currentDraw.stop();
+            this.currentDraw = null;
+        }
+        this.tooltip.setVisible(false);
     }
 
     /**
-     * 设置事件处理器
+     * 创建绘制实例
      */
-    private setupEventHandlers(): void {
-        // 鼠标移动事件
-        this.handler.setInputAction(
-            (event: { endPosition: Cesium.Cartesian2 }) => {
-                if (!this.drawingMode) return;
-
-                const cartesian = this.getCartesianFromScreenPoint(
-                    event.endPosition
-                );
-                if (!cartesian) return;
-
-                if (!this.moveStatus) {
-                    this.tooltip.showAt(
-                        event.endPosition,
-                        '<p>请单击鼠标左键开始绘制</p>'
-                    );
-                } else {
-                    this.tooltip.showAt(
-                        event.endPosition,
-                        '<p>请单击鼠标右键结束绘制</p>'
-                    );
-                    if (this.positions.length === 0) {
-                        this.positions.push(cartesian);
-                        this.positions.push(cartesian.clone());
-                    } else {
-                        this.positions[this.positions.length - 1] = cartesian;
-                    }
-                    this.updateTempEntity();
-                }
-            },
-            Cesium.ScreenSpaceEventType.MOUSE_MOVE
-        );
-
-        // 鼠标左键点击事件
-        this.handler.setInputAction(
-            (event: { position: Cesium.Cartesian2 }) => {
-                console.log('this.drawingMode', this.drawingMode);
-
-                if (!this.drawingMode) return;
-
-                const cartesian = this.getCartesianFromScreenPoint(
-                    event.position
-                );
-                if (!cartesian) return;
-
-                if (this.drawingMode === DrawMode.Point) {
-                    this.positions = [cartesian];
-                    this.finishDrawing();
-                    return;
-                }
-
-                if (!this.moveStatus) {
-                    this.moveStatus = true;
-                    this.tooltip.showAt(
-                        event.position,
-                        '<p>请拖动鼠标绘制区域范围</p>'
-                    );
-                    if (
-                        this.drawingMode === DrawMode.Rectangle ||
-                        this.drawingMode === DrawMode.Circle
-                    ) {
-                        this.positions[0] = cartesian;
-                        this.positions.push(cartesian.clone());
-                    } else {
-                        this.positions.push(cartesian);
-                    }
-                } else if (
-                    this.drawingMode === DrawMode.Rectangle ||
-                    this.drawingMode === DrawMode.Circle
-                ) {
-                    if (this.positions.length === 2) {
-                        this.finishDrawing();
-                    }
-                } else {
-                    this.positions.push(cartesian);
-                }
-            },
-            Cesium.ScreenSpaceEventType.LEFT_CLICK
-        );
-
-        // 鼠标右键点击事件 - 完成绘制
-        this.handler.setInputAction(() => {
-            if (!this.drawingMode) return;
-            this.finishDrawing();
-        }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
-    }
-
-    /**
-     * 移除事件处理器
-     */
-    private removeEventHandlers(): void {
-        this.handler.removeInputAction(Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-        this.handler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
-        this.handler.removeInputAction(Cesium.ScreenSpaceEventType.RIGHT_CLICK);
-    }
-
-    /**
-     * 从屏幕坐标获取世界坐标
-     */
-    private getCartesianFromScreenPoint(
-        screenPoint: Cesium.Cartesian2
-    ): Cesium.Cartesian3 | undefined {
-        const { cartesian } = screenCoordinatesToDegrees(
-            this.viewer,
-            screenPoint
-        );
-        return cartesian;
-    }
-
-    /**
-     * 更新临时实体
-     */
-    private updateTempEntity(): void {
-        this.clearTempEntity();
-
-        if (!this.drawingMode) return;
-        if (this.drawingMode === DrawMode.Point && this.positions.length < 1)
-            return;
-        if (this.drawingMode !== DrawMode.Point && this.positions.length < 2)
-            return;
-
-        const defaultStyle = {
-            fillColor:
-                Cesium.Color.fromCssColorString('#3388ff').withAlpha(0.4),
-            outlineColor: Cesium.Color.fromCssColorString('#3388ff'),
-            outlineWidth: 2,
-            pointSize: 12,
-            lineWidth: 4,
-        };
-
-        switch (this.drawingMode) {
+    private createDrawInstance(mode: DrawMode): BaseDraw {
+        switch (mode) {
             case DrawMode.Point:
-                this.tempEntity = this.viewer.entities.add({
-                    position: this.positions[0],
-                    point: {
-                        pixelSize: defaultStyle.pointSize,
-                        color: defaultStyle.outlineColor,
-                        outlineColor: Cesium.Color.WHITE,
-                        outlineWidth: 1,
-                        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                        disableDepthTestDistance: Number.POSITIVE_INFINITY,
-                    },
-                });
-                break;
-
+                return new PointDraw(this.viewer, this.style);
             case DrawMode.Line:
-                this.tempEntity = this.viewer.entities.add({
-                    polyline: {
-                        positions: this.positions,
-                        width: defaultStyle.lineWidth,
-                        material: new Cesium.PolylineGlowMaterialProperty({
-                            glowPower: 0.2,
-                            color: defaultStyle.outlineColor,
-                        }),
-                        clampToGround: true,
-                        classificationType: Cesium.ClassificationType.BOTH,
-                    },
-                });
-                break;
-
+                return new LineDraw(this.viewer, this.style);
             case DrawMode.Polygon:
-                this.tempEntity = this.viewer.entities.add({
-                    polygon: {
-                        hierarchy: new Cesium.PolygonHierarchy(this.positions),
-                        material: defaultStyle.fillColor,
-                        outline: true,
-                        outlineColor: defaultStyle.outlineColor,
-                        outlineWidth: defaultStyle.outlineWidth,
-                        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                        perPositionHeight: false,
-                        classificationType: Cesium.ClassificationType.BOTH,
-                    },
-                    polyline: {
-                        positions:
-                            this.positions.length >= 3
-                                ? [...this.positions, this.positions[0]]
-                                : [
-                                      ...this.positions,
-                                      this.positions[this.positions.length - 1],
-                                  ],
-                        material: defaultStyle.outlineColor,
-                        width: defaultStyle.lineWidth,
-                        clampToGround: true,
-                    },
-                });
-                break;
-
+                return new PolygonDraw(this.viewer, this.style);
             case DrawMode.Rectangle:
-                this.tempEntity = this.viewer.entities.add({
-                    rectangle: {
-                        coordinates: Cesium.Rectangle.fromCartesianArray(
-                            this.positions
-                        ),
-                        material: defaultStyle.fillColor,
-                        outline: true,
-                        outlineColor: defaultStyle.outlineColor,
-                        outlineWidth: defaultStyle.outlineWidth,
-                        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                    },
-                });
-                break;
-
+                return new RectangleDraw(this.viewer, this.style);
             case DrawMode.Circle:
-                const center = this.positions[0];
-                const radius = Cesium.Cartesian3.distance(
-                    center,
-                    this.positions[1]
-                );
-                this.tempEntity = this.viewer.entities.add({
-                    position: center,
-                    ellipse: {
-                        semiMinorAxis: radius,
-                        semiMajorAxis: radius,
-                        material: defaultStyle.fillColor,
-                        outline: true,
-                        outlineColor: defaultStyle.outlineColor,
-                        outlineWidth: defaultStyle.outlineWidth,
-                        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                    },
-                });
-                break;
+                return new CircleDraw(this.viewer, this.style);
+            default:
+                throw new Error(`不支持的绘制模式: ${mode}`);
         }
     }
 
     /**
-     * 清除临时实体
+     * 处理绘制完成
      */
-    private clearTempEntity(): void {
-        if (this.tempEntity) {
-            this.viewer.entities.remove(this.tempEntity);
-            this.tempEntity = null;
+    private handleDrawComplete(result: DrawResult): void {
+        // 保存实体
+        if (result.entity) {
+            this.entities.push(result.entity);
         }
-    }
 
-    private clearAllEntities(): void {
-        this.entities.forEach((entity) => {
-            this.viewer.entities.remove(entity);
-        });
-        this.entities = [];
-    }
-
-    /**
-     * 完成绘制
-     */
-    private finishDrawing(): void {
-        if (!this.drawingMode) return;
-        if (this.drawingMode === DrawMode.Point && this.positions.length < 1)
-            return;
-        if (this.drawingMode !== DrawMode.Point && this.positions.length < 2)
-            return;
-
-        // 保存最终图形
-        this.updateTempEntity();
-
-        // 确保实体被正确创建
-        if (!this.tempEntity) return;
-
-        // 将临时实体添加到实体列表中
-        const finalEntity = this.tempEntity;
-        this.entities.push(finalEntity);
-
-        // 如果有回调函数，则调用
+        // 调用回调
         if (this.drawCompleteCallback) {
-            const result: DrawResult = {
-                entity: finalEntity,
-                positions: [...this.positions],
-                mode: this.drawingMode,
-            };
             this.drawCompleteCallback(result);
         }
 
-        // 重置状态以准备下一次绘制
-        this.moveStatus = false;
-        this.positions = [];
-        this.tooltip.setVisible(false);
-        // 清除临时实体引用，但不从viewer中移除
-        this.tempEntity = null;
+        // 重置当前绘制
+        this.currentDraw = null;
 
-        // 重新显示初始提示
+        // 显示初始提示
         const canvas = this.viewer.scene.canvas;
         const rect = canvas.getBoundingClientRect();
         const center = {
@@ -361,16 +133,22 @@ export class DrawManager {
     }
 
     /**
-     * 销毁管理器
+     * 清除所有实体
+     */
+    clearAllEntities(): void {
+        this.entities.forEach((entity) => {
+            this.viewer.entities.remove(entity);
+        });
+        this.entities = [];
+    }
+
+    /**
+     * 设置键盘事件处理器
      */
     private setupKeyboardEventHandlers(): void {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
-                if (this.drawingMode) {
-                    this.stopDraw();
-                    this.tooltip.setVisible(false);
-                    this.moveStatus = false;
-                }
+                this.stopDraw();
                 this.clearAllEntities();
             }
         };
@@ -380,15 +158,15 @@ export class DrawManager {
 
     private _handleKeyDown: ((event: KeyboardEvent) => void) | null = null;
 
+    /**
+     * 销毁管理器
+     */
     destroy(): void {
         this.stopDraw();
-        this.handler.destroy();
         if (this._handleKeyDown) {
             document.removeEventListener('keydown', this._handleKeyDown);
         }
-        if (this.snapPointEntity) {
-            this.viewer.entities.remove(this.snapPointEntity);
-        }
         this.tooltip.destroy();
+        this.clearAllEntities();
     }
 }

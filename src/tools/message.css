@@ -1,0 +1,35 @@
+.draw-notification {
+    background-color: rgba(0, 0, 0, 0.75) !important;
+    color: #ffffff;
+    /* padding: 16px; */
+    border-radius: 6px;
+    /* margin: 10 !important; */
+    padding: 6px !important;
+}
+
+.draw-notification .ant-notification-notice-message {
+    /* display: none; */
+    color: #ffffff !important;
+    font-size: 14px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    padding-left: 24px !important;
+}
+
+.draw-notification .ant-notification-notice-description {
+    color: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.draw-notification .ant-notification-notice-with-icon {}
+
+.draw-notification .ant-notification-notice-icon {
+    font-size: 16px !important;
+    top: 8px;
+}
+
+.cesium-viewer .ant-notification-bottomLeft {
+    left: 10px !important;
+    bottom: unset !important;
+}

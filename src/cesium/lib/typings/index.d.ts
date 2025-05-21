@@ -11,4 +11,4 @@
  *  @Update         [time:user] 某用户更新此文件
  * */
 
-declare const Cesium;
+// declare const Cesium;

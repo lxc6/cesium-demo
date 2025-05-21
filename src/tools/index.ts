@@ -1,12 +1,13 @@
 export * from './tooltip';
 export * from './colors';
 export * from './animatioin';
-export * from './measureSuperMap';
+// export * from './measureSuperMap';
 export * from './geometry';
 export * from './coordinate';
 export * from './processing';
-export * from './test';
+// export * from './test';
 export * from './time';
 export * from './prasePxToCm';
 export * from './flightPreview';
-export * from './clear';
+// export * from './clear';
+export * from './message';

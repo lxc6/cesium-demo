@@ -2,8 +2,8 @@
 
 declare namespace Cesium {
     export * from 'cesium';
-    // export interface Viewer {}
-    export interface Scene {
+
+    interface Scene {
         undergroundMode: boolean;
         open: (
             url: string,
@@ -163,5 +163,8 @@ declare module 'cesium' {
         layers: any;
         addS3MTilesLayerByScp: any;
         multiViewportMode: number;
+        [propName: string]: any;
     }
+
+    export = Cesium;
 }
