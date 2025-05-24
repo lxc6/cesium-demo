@@ -1,6 +1,6 @@
 import * as Cesium from 'cesium';
 
-import { createTooltip, MouseTooltip } from '../tools/index';
+import { createTooltip, MouseTooltip, createDrawMessage } from '../tools/index';
 
 import {
     BaseDraw,
@@ -40,6 +40,7 @@ export class DrawManager {
     private tooltip: MouseTooltip;
     private entities: Cesium.Entity[] = [];
     private style: DrawStyle;
+    private drawMessage = createDrawMessage();
 
     constructor(viewer: Cesium.Viewer, style: Partial<DrawStyle> = {}) {
         this.viewer = viewer;
@@ -71,6 +72,7 @@ export class DrawManager {
         // 开始绘制
         if (this.currentDraw) {
             this.currentDraw.start().then(this.handleDrawComplete.bind(this));
+            this.drawMessage.show('按ESC键取消绘制', 'default');
         }
     }
 
@@ -81,6 +83,7 @@ export class DrawManager {
         if (this.currentDraw) {
             this.currentDraw.stop();
             this.currentDraw = null;
+            this.drawMessage.hide('default');
         }
         this.tooltip.setVisible(false);
     }
@@ -122,14 +125,14 @@ export class DrawManager {
         // 重置当前绘制
         this.currentDraw = null;
 
-        // 显示初始提示
-        const canvas = this.viewer.scene.canvas;
-        const rect = canvas.getBoundingClientRect();
-        const center = {
-            x: rect.left + rect.width / 2,
-            y: rect.top + rect.height / 2,
-        };
-        this.tooltip.showAt(center, '<p>请单击鼠标左键开始绘制</p>');
+        // // 显示初始提示
+        // const canvas = this.viewer.scene.canvas;
+        // const rect = canvas.getBoundingClientRect();
+        // const center = {
+        //     x: rect.left + rect.width / 2,
+        //     y: rect.top + rect.height / 2,
+        // };
+        // this.tooltip.showAt(center, '<p>请单击鼠标左键开始绘制</p>');
     }
 
     /**
@@ -147,7 +150,7 @@ export class DrawManager {
      */
     private setupKeyboardEventHandlers(): void {
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
+            if (event.key === 'Escape' && this.currentDraw) {
                 this.stopDraw();
                 this.clearAllEntities();
             }

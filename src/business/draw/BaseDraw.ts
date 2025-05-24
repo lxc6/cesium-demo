@@ -1,8 +1,8 @@
 import * as Cesium from 'cesium';
 
 import {
-    createTooltip,
-    MouseTooltip,
+    createDrawMessage,
+    DrawMessage,
     screenCoordinatesToDegrees,
 } from '../../tools/index';
 import { DrawMode, DrawResult } from '../DrawManager';
@@ -15,7 +15,7 @@ export abstract class BaseDraw {
     protected handler: Cesium.ScreenSpaceEventHandler;
     protected positions: Cesium.Cartesian3[] = [];
     protected tempEntity: Cesium.Entity | null = null;
-    protected tooltip: MouseTooltip;
+    protected message: DrawMessage;
     protected moveStatus = false;
 
     constructor(viewer: Cesium.Viewer) {
@@ -23,9 +23,7 @@ export abstract class BaseDraw {
         this.handler = new Cesium.ScreenSpaceEventHandler(
             this.viewer.scene.canvas
         );
-        this.tooltip = createTooltip(
-            this.viewer.container.firstElementChild as HTMLDivElement
-        );
+        this.message = createDrawMessage();
     }
 
     /**
@@ -41,7 +39,7 @@ export abstract class BaseDraw {
         this.positions = [];
         this.clearTempEntity();
         this.removeEventHandlers();
-        this.tooltip.setVisible(false);
+        this.message.hide();
     }
 
     /**

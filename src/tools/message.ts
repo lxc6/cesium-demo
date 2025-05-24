@@ -58,6 +58,9 @@ export function createDrawMessage(
             key: `draw-message-${key}`,
             placement: finalConfig.placement,
             closeIcon: finalConfig.closeIcon,
+            style: {
+                width: 'max-content',
+            },
             onClose: () => {
                 messageKeys.delete(key);
                 const listener = escKeyListeners.get(key);

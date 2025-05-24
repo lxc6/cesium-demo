@@ -7,44 +7,44 @@ import { superMap, localMap } from '@/utils/providers';
 import './index.scss';
 
 const CesiumDemo = () => {
-    const { isReady, camera } = useCesium('cesiumContainer', {
-        // defaultImageryProvider: localMap(), // 加载厂区 超图高清底图  安庆
-        // defaultImageryProvider: superMap(), // 加载厂区 超图高清底图  榆林
-        // terrainProvider: Cesium.createWorldTerrain(), // 加载地形
-        // 初始视角设置存储
-        defaultPosition: {
-            ...PRESET_LOCATIONS.HAINAN.position,
-            ...PRESET_LOCATIONS.HAINAN.camera,
-        },
-    });
+	const { isReady, camera } = useCesium('cesiumContainer', {
+		// defaultImageryProvider: localMap(), // 加载厂区 超图高清底图  安庆
+		// defaultImageryProvider: superMap(), // 加载厂区 超图高清底图  榆林
+		// terrainProvider: Cesium.createWorldTerrain(), // 加载地形
+		// 初始视角设置存储
+		defaultPosition: {
+			...PRESET_LOCATIONS.HAINAN.position,
+			...PRESET_LOCATIONS.HAINAN.camera,
+		},
+	});
 
-    useEffect(() => {
-        if (camera) {
-            // 设置默认位置  海南
-            camera?.flyTo({
-                position: PRESET_LOCATIONS.HAINAN.position,
-                ...PRESET_LOCATIONS.HAINAN.camera,
-                duration: 2,
-            });
-        }
-    }, [camera]);
+	useEffect(() => {
+		if (camera) {
+			// 设置默认位置  海南
+			camera?.flyTo({
+				position: PRESET_LOCATIONS.HAINAN.position,
+				...PRESET_LOCATIONS.HAINAN.camera,
+				duration: 2,
+			});
+		}
+	}, [camera]);
 
-    const handleFlyTo = (
-        location: (typeof PRESET_LOCATIONS)[keyof typeof PRESET_LOCATIONS]
-    ) => {
-        camera?.flyTo({
-            position: location.position,
-            ...location.camera,
-            duration: 3,
-        });
-    };
+	const handleFlyTo = (
+		location: (typeof PRESET_LOCATIONS)[keyof typeof PRESET_LOCATIONS]
+	) => {
+		camera?.flyTo({
+			position: location.position,
+			...location.camera,
+			duration: 3,
+		});
+	};
 
-    return (
-        <div className='cesium-container'>
-            <ControlPanel onFlyTo={handleFlyTo} />
-            <div id='cesiumContainer' className='map-container' />
-        </div>
-    );
+	return (
+		<div className='cesium-container'>
+			<ControlPanel onFlyTo={handleFlyTo} />
+			<div id='cesiumContainer' className='map-container' />
+		</div>
+	);
 };
 
 export default CesiumDemo;

@@ -23,10 +23,10 @@ export class PointDraw extends BaseDraw {
             // 设置鼠标移动事件
             this.handler.setInputAction(
                 (event: { endPosition: Cesium.Cartesian2 }) => {
-                    this.tooltip.showAt(
-                        event.endPosition,
-                        '<p>单击鼠标左键确定点位置</p>'
-                    );
+                    // this.tooltip.showAt(
+                    //     event.endPosition,
+                    //     '<p>单击鼠标左键确定点位置</p>'
+                    // );
                 },
                 Cesium.ScreenSpaceEventType.MOUSE_MOVE
             );
@@ -51,7 +51,7 @@ export class PointDraw extends BaseDraw {
                     };
 
                     // 清理事件并返回结果
-                    this.tooltip.setVisible(false);
+                    // this.tooltip.setVisible(false);
                     this.removeEventHandlers();
                     resolve(result);
                 },
