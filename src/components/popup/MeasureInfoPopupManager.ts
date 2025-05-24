@@ -23,7 +23,11 @@ export interface SegmentInfo {
 
 	// 表面积测量
 	deviceId?: string;
+	设备位号?: string;
+	SMBIMINFO?: string;
 	surfaceArea?: string;
+	SURFACEAREA?: string;
+	[key: string]: string | number | undefined;
 }
 
 /**

@@ -107,7 +107,7 @@ export class CoreScene {
 			// imageryProvider: bingMap(), // 底图服务
 		});
 
-		// this.viewer.imageryLayers.addImageryProvider(localMap());
+		this.viewer.imageryLayers.addImageryProvider(bingMap());
 		console.log('this.viewer------------', this.viewer);
 	}
 

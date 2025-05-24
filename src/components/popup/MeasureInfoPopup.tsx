@@ -27,17 +27,17 @@ const MeasureInfoPopup: React.FC<MeasureInfoPopupProps> = ({
 		switch (measureType) {
 			case 'LINE':
 				return [
-					{ key: '起点坐标', value: info.startPoint || '-' },
-					{ key: '终点坐标', value: info.endPoint || '-' },
-					{ key: '空间距离', value: info.distance || '-' },
-					{ key: '垂直距离', value: info.verticalDistance || '-' },
+					{ key: '起点坐标', value: info.startPoint || '--' },
+					{ key: '终点坐标', value: info.endPoint || '--' },
+					{ key: '空间距离', value: info.distance || '--' },
+					{ key: '垂直距离', value: info.verticalDistance || '--' },
 					{
 						key: '水平距离 X',
-						value: info.horizontalDistanceX || '-',
+						value: info.horizontalDistanceX || '--',
 					},
 					{
 						key: '水平距离 Y',
-						value: info.horizontalDistanceY || '-',
+						value: info.horizontalDistanceY || '--',
 					},
 				];
 			case 'AREA':
@@ -45,18 +45,19 @@ const MeasureInfoPopup: React.FC<MeasureInfoPopupProps> = ({
 					{ key: '顶点个数', value: info.vertexCount || 0 },
 					{
 						key: '周长',
-						value: info.perimeter || '-',
+						value: info.perimeter || '--',
 					},
-					{ key: '面积', value: info.area || '-' },
+					{ key: '面积', value: info.area || '--' },
 				];
 			case 'SURFACE':
 				return [
-					{ key: '设备位号', value: info.deviceId || '-' },
+					{ key: '设备位号', value: info['设备位号'] || '--' },
+					{ key: '权属单位', value: info['权属单位'] || '--' },
 					{
 						key: '表面积',
-						value: info.surfaceArea
-							? `${info.surfaceArea} m²`
-							: '-',
+						value: info.SURFACEAREA
+							? `${Number(info.SURFACEAREA).toFixed(3)} m²`
+							: '--',
 					},
 				];
 			default:

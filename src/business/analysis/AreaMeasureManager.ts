@@ -2,29 +2,19 @@ import {
 	Cartesian3,
 	ScreenSpaceEventType,
 	CallbackProperty,
-	PolygonGraphics,
 	PolygonHierarchy,
 	Color,
 	Entity,
 	Math as CesiumMath,
 	Cartographic,
 	Viewer,
-	ScreenSpaceEventHandler,
 	Cartesian2,
 	LabelStyle,
 	VerticalOrigin,
 	HorizontalOrigin,
-	PointGraphics,
-	LabelGraphics,
-	ColorMaterialProperty,
-	Property,
-	ConstantProperty,
 	HeightReference,
-	PolylineGraphics,
-	PositionProperty,
 } from 'cesium';
 import { BaseMeasureManager } from './BaseMeasureManager';
-import { AreaMeasureResult } from '@/components/popup/MeasureInfoPopupManager';
 import { defaultMeasureStyles } from './measureUtils';
 import { createDrawMessage } from '@/tools/message';
 

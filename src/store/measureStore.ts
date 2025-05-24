@@ -47,6 +47,12 @@ export const useMeasureStore = create<MeasureState>((set, get) => ({
 					);
 					Manager = AreaMeasureManager;
 					break;
+				case 'SURFACE':
+					const { SurfaceAreaMeasureManager } = await import(
+						'@/business/analysis/SurfaceAreaMeasureManager'
+					);
+					Manager = SurfaceAreaMeasureManager;
+					break;
 				default:
 					return;
 			}

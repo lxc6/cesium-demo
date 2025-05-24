@@ -2,6 +2,7 @@ import { Viewer } from 'cesium';
 import { MeasureType } from './analysis/types';
 import { LineMeasureManager } from './analysis/LineMeasureManager';
 import { AreaMeasureManager } from './analysis/AreaMeasureManager';
+import { SurfaceAreaMeasureManager } from './analysis/SurfaceAreaMeasureManager';
 import { BaseMeasureManager } from './analysis/BaseMeasureManager';
 import { measureInfoPopup } from '@/components/popup/MeasureInfoPopupManager';
 
@@ -14,6 +15,7 @@ export class MeasureManager {
 		| BaseMeasureManager
 		| AreaMeasureManager
 		| LineMeasureManager
+		| SurfaceAreaMeasureManager
 		| null = null;
 	private static instance: MeasureManager | null = null;
 	private isActive: boolean = false;
@@ -76,8 +78,10 @@ export class MeasureManager {
 				this.currentManager = new AreaMeasureManager(this.viewer);
 				break;
 			case 'SURFACE':
-				// TODO: 实现表面积测量
-				console.warn('表面积测量功能尚未实现');
+				console.log('创建表面积测量管理器');
+				this.currentManager = new SurfaceAreaMeasureManager(
+					this.viewer
+				);
 				return;
 		}
 
